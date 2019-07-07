@@ -1,0 +1,339 @@
+<div class="topic--overview">
+  <h1>Design</h1>
+  <p>This is an offline application, which means that once downloaded, an internet connection is not required to use it.</p>
+  <p>The application supports any Android, Windows, or Linux platform with the latest version of Google Chrome or Mozilla Firefox web browser. (It should also support the Safari web browser, but has not been tested on Mac/iOS platforms.)</p>
+  <p>On an Android platform, the best user experience is available using Chrome for Android. By selecting 'Add to Home screen', the application mimics a native Android app.</p>
+  <h1>Navigation And Icons</h1>
+  <p>The application uses six main Pages: Read, Book, Chapter, Bookmark, Search, Setting, and Help.</p>
+  <p>The Bookmark, Search, and Help Pages have additional Subpages.</p>
+  <p>All Pages have an Upper Toolbar and a Lower Toolbar. These provide context information and buttons to access other features.</p>
+  <p>Use the Back button in the Lower Toolbar to return to the previous Page:</p>
+  <div class="entry entry--icon">
+    <div class="icon-description">Back</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Back">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--next" xlink:href="icons.svg#back"></use>
+      </svg>
+    </div>
+  </div>
+  <br>
+  <p>On smaller devices, only one Page is visible at a time. Tap the desired button to display that Page or Subpage. Tap the Back button to return to the Read/Previous Page.</p>
+  <p>On larger devices, the Read Page is always visible and a single sidebar displays one of the other Pages. Tap the corresponding button on the Read Page to display the desired Page in the sidebar.</p>
+  <h1>Read Page</h1>
+  <p>The following buttons are available:</p>
+  <div class="entry entry--icon">
+    <div class="icon-description">Previous Chapter</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Previous Chapter">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--prev" xlink:href="icons.svg#prev"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Next Chapter</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Next Chapter">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--next" xlink:href="icons.svg#next"></use>
+      </svg>
+    </div>
+  </div>
+  <br>
+  <p>The following buttons provide access to the other Pages:</p>
+  <div class="entry entry--icon">
+    <div class="icon-description">Book Page</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Book">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--book" xlink:href="icons.svg#book"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Chapter Page</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Chapter">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--chapter" xlink:href="icons.svg#chapter"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Bookmark Page</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Bookmark">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--bookmark" xlink:href="icons.svg#bookmark"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Search Page</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Search">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--search" xlink:href="icons.svg#search"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Setting Page</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Setting">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--setting" xlink:href="icons.svg#setting"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Help Page</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Help">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--help" xlink:href="icons.svg#help"></use>
+      </svg>
+    </div>
+  </div>
+  <br>
+  <p>As appropriate, the following buttons control verse display mode:</p>
+  <div class="entry entry--icon">
+    <div class="icon-description">Single Column</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Single Column">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--column-1" xlink:href="icons.svg#column-1"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Double Column</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Double Column">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--column-2" xlink:href="icons.svg#column-2"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Triple Column</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Triple Column">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--column-3" xlink:href="icons.svg#column-3"></use>
+      </svg>
+    </div>
+  </div>
+  <br>
+  <h1>Bookmark Page</h1>
+  <p>The following buttons are available:</p>
+  <div class="entry entry--icon">
+    <div class="icon-description">Folder Add Subpage</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Folder Add">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--folder-add" xlink:href="icons.svg#folder-add"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Folder Subpage</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Folders">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--folder" xlink:href="icons.svg#folder"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Sort Ascending</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Sort Ascending">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--sort-ascend" xlink:href="icons.svg#sort-ascend"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Sort Descending</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Sort Descending">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--sort-descend" xlink:href="icons.svg#sort-descend"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Sort Invert</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Sort Invert">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--sort-invert" xlink:href="icons.svg#sort-invert"></use>
+      </svg>
+    </div>
+  </div>
+  <h2>Folder Subpage</h2>
+  <p>The following buttons are available:</p>
+  <div class="entry entry--icon">
+    <div class="icon-description">Import</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Import">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--import" xlink:href="icons.svg#import"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Export</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Export">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--export" xlink:href="icons.svg#export"></use>
+      </svg>
+    </div>
+  </div>
+  <br>
+  <h1>Search Page</h1>
+  <p>The following buttons are available:</p>
+  <div class="entry entry--icon">
+    <div class="icon-description">Filter Subpage</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Filter">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--filter" xlink:href="icons.svg#filter"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">History Subpage</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="History">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--history" xlink:href="icons.svg#history"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Search Go</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Search Go">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--search-go" xlink:href="icons.svg#search-go"></use>
+      </svg>
+    </div>
+  </div>
+  <h2>Filter Subpage</h2>
+  <p>The following buttons are available:</p>
+  <div class="entry entry--icon">
+    <div class="icon-description">Select Filter</div>
+    <div class="icon-holder" aria-label="Select Filter">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--select-filter" xlink:href="icons.svg#select-filter"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Active Filter</div>
+    <div class="icon-holder" aria-label="Active Filter">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--active-filter" xlink:href="icons.svg#active-filter"></use>
+      </svg>
+    </div>
+  </div>
+  <br>
+  <h1>Setting Page</h1>
+  <p>The following buttons are available:</p>
+  <div class="entry entry--icon">
+    <div class="icon-description">Previous</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Previous">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--prev" xlink:href="icons.svg#prev"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Next</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Next">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--next" xlink:href="icons.svg#next"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Font Size</div>
+    <div class="icon-holder icon-holder--font-size" aria-label="Font Size">Aa</div>
+  </div>
+  <br>
+  <h1>Help Page</h1>
+  <p>The following button is available:</p>
+  <div class="entry entry--icon">
+    <div class="icon-description">Topic Page</div>
+    <div class="icon-holder icon-holder--toolbar" aria-label="Help Topic">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--topic" xlink:href="icons.svg#topic"></use>
+      </svg>
+    </div>
+  </div>
+  <br>
+  <h1>More Information</h1>
+  <p>See the appropiate Help Topic for more details (Tap the Topic Page button in the Toolbar above).</p>
+  <h1>Action Menus</h1>
+  <p>The Bookmark Page and the Folder and History Subpages provide for additional actions on individual entries via an Action Menu.</p>
+  <p>Tap the Menu button to open the Action Menu for that entry:</p>
+  <div class="entry entry--icon">
+    <div class="icon-description">Menu</div>
+    <div class="icon-holder" aria-label="Menu">
+      <svg class="icon-holder__svg">
+        <use class="icon-holder__use icon-holder__use--menu" xlink:href="icons.svg#menu"></use>
+      </svg>
+    </div>
+  </div>
+  <br>
+  <p>Use the Cancel button to close the Action Menu:</p>
+  <div class="entry entry--icon">
+    <div class="icon-description">Cancel</div>
+    <div class="icon-holder icon-holder--action" aria-label="Cancel">
+      <svg class="icon-holder icon-holder__svg">
+        <use class="icon-holder icon-holder__use icon-holder icon-holder__use--cancel" xlink:href="icons.svg#cancel"></use>
+      </svg>
+    </div>
+  </div>
+  <br>
+  <p>The following Actions are available (as appropriate):</p>
+  <div class="entry entry--icon">
+    <div class="icon-description">Move Up</div>
+    <div class="icon-holder icon-holder--action" aria-label="Move Up">
+      <svg class="icon-holder icon-holder__svg">
+        <use class="icon-holder icon-holder__use icon-holder icon-holder__use-upc" xlink:href="icons.svg#up"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Move Down</div>
+    <div class="icon-holder icon-holder--action" aria-label="Move Down">
+      <svg class="icon-holder icon-holder__svg">
+        <use class="icon-holder icon-holder__use icon-holder icon-holder__use--down" xlink:href="icons.svg#down"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Delete</div>
+    <div class="icon-holder icon-holder--action" aria-label="Delete">
+      <svg class="icon-holder icon-holder__svg">
+        <use class="icon-holder icon-holder__use icon-holder icon-holder__use--delete" xlink:href="icons.svg#delete"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Rename</div>
+    <div class="icon-holder icon-holder--action" aria-label="Rename">
+      <svg class="icon-holder icon-holder__svg">
+        <use class="icon-holder icon-holder__use icon-holder icon-holder__use--rename" xlink:href="icons.svg#rename"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Move/Copy</div>
+    <div class="icon-holder icon-holder--action" aria-label="Move/Copy">
+      <svg class="icon-holder icon-holder__svg">
+        <use class="icon-holder icon-holder__use icon-holder icon-holder__use--move-copy" xlink:href="icons.svg#move-copy"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Move</div>
+    <div class="icon-holder icon-holder--action" aria-label="Move">
+      <svg class="icon-holder icon-holder__svg">
+        <use class="icon-holder icon-holder__use icon-holder icon-holder__use--move" xlink:href="icons.svg#move"></use>
+      </svg>
+    </div>
+  </div>
+  <div class="entry entry--icon">
+    <div class="icon-description">Copy</div>
+    <div class="icon-holder icon-holder--action" aria-label="Copy">
+      <svg class="icon-holder icon-holder__svg">
+        <use class="icon-holder icon-holder__use icon-holder icon-holder__use--copy" xlink:href="icons.svg#copy"></use>
+      </svg>
+    </div>
+  </div>
+  <br>
+</div>
