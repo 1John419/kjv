@@ -2,7 +2,7 @@ let appPrefix = 'kjv';
 
 let appCaches = [
   {
-    name: 'kjv-core-20190709.02',
+    name: 'kjv-core-20190709.03',
     urls: [
       './',
       './index.html',

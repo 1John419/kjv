@@ -10,6 +10,8 @@ import {
   idxVerseNum
 } from './tomeIdx.js';
 
+export const appPrefix = 'kjv';
+
 export const centerScrollElement = (scrollElement, element) => {
   let y = element.offsetTop -
     (scrollElement.clientHeight - element.clientHeight) / 2;

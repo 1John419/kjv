@@ -2,7 +2,7 @@
 
 import { bus } from '../EventBus.js';
 
-import { appPrefix } from '../app.js';
+import { appPrefix } from '../util.js';
 
 class ReadModel {
 

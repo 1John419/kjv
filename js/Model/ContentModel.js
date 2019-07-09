@@ -6,7 +6,7 @@ import { tome } from '../Tome/tome.js';
 
 import { idxBook } from '../tomeIdx.js';
 
-import { appPrefix } from '../app.js';
+import { appPrefix } from '../util.js';
 
 import { getChapterName } from '../util.js';
 

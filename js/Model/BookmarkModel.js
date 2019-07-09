@@ -4,7 +4,7 @@ import { bus } from '../EventBus.js';
 
 import { tome } from '../Tome/tome.js';
 
-import { appPrefix } from '../app.js';
+import { appPrefix } from '../util.js';
 
 const numSortAscend = (a, b) => a - b;
 const numSortDescend = (a, b) => b - a;
