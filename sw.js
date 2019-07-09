@@ -1,6 +1,6 @@
 let appCaches = [
   {
-    name: 'kjv-core-20190707.01',
+    name: 'kjv-core-20190708.01',
     urls: [
       './',
       './index.html',
@@ -24,7 +24,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjv-icon-20190707.01',
+    name: 'kjv-icon-20190708.01',
     urls: [
       './png/icon-32.png',
       './png/icon-192.png',
@@ -35,7 +35,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjv-help-20190705.001',
+    name: 'kjv-help-20190708.001',
     urls: [
       './help/about.html',
       './help/book-chapter.html',

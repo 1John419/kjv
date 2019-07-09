@@ -6,7 +6,8 @@ import { tome } from '../Tome/tome.js';
 
 import {
   idxChapter,
-  idxFirstChapter
+  idxFirstChapter,
+  idxLastChapter
 } from '../tomeIdx.js';
 
 import { getChapterName } from '../util.js';
@@ -27,12 +28,18 @@ class ContentController {
       bus.publish('chapter.scroll-to-top');
     }
     this.lastBookIdx = bookIdx;
-    if (this.panes > 1) {
+    let book = tome.books[bookIdx];
+    let chapterCount = book[idxLastChapter] - book[idxFirstChapter] + 1;
+    if (this.panes > 1 || chapterCount === 1) {
       let chapter = this.buildFirstChapter(bookIdx);
       bus.publish('chapterPkg.change', chapter);
       bus.publish('read.scroll-to-top', null);
     }
-    bus.publish('sidebar.change', 'chapter');
+    if (this.panes === 1 && chapterCount === 1) {
+      bus.publish('sidebar.change', 'none');
+    } else {
+      bus.publish('sidebar.change', 'chapter');
+    }
   }
 
   actionChapterBack() {
