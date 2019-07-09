@@ -35,7 +35,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjv-help-20190708.001',
+    name: 'kjv-help-20190708.01',
     urls: [
       './help/about.html',
       './help/book-chapter.html',
