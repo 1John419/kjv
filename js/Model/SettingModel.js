@@ -2,6 +2,8 @@
 
 import { bus } from '../EventBus.js';
 
+import { appPrefix } from '../app.js';
+
 class SettingModel {
   constructor() {
     this.initialize();
@@ -26,7 +28,7 @@ class SettingModel {
   }
 
   getFont() {
-    let font = localStorage.getItem('font');
+    let font = localStorage.getItem(`${appPrefix}-font`);
     if (!font) {
       font = {
         fontName: 'Roboto',
@@ -68,7 +70,7 @@ class SettingModel {
   }
 
   getFontSize() {
-    let fontSize = localStorage.getItem('fontSize');
+    let fontSize = localStorage.getItem(`${appPrefix}-fontSize`);
     if (!fontSize) {
       fontSize = 'font-size--m';
     } else {
@@ -78,7 +80,7 @@ class SettingModel {
   }
 
   getTheme() {
-    let theme = localStorage.getItem('theme');
+    let theme = localStorage.getItem(`${appPrefix}-theme`);
     if (!theme) {
       theme = {
         themeName: 'Sapphire',
@@ -128,15 +130,15 @@ class SettingModel {
   }
 
   saveFont() {
-    localStorage.setItem('font', JSON.stringify(this.font));
+    localStorage.setItem(`${appPrefix}-font`, JSON.stringify(this.font));
   }
 
   saveFontSize() {
-    localStorage.setItem('fontSize', JSON.stringify(this.fontSize));
+    localStorage.setItem(`${appPrefix}-fontSize`, JSON.stringify(this.fontSize));
   }
 
   saveTheme() {
-    localStorage.setItem('theme', JSON.stringify(this.theme));
+    localStorage.setItem(`${appPrefix}-theme`, JSON.stringify(this.theme));
   }
 
   settingGet() {

@@ -2,6 +2,8 @@
 
 /*eslint no-unused-vars: ["off"]*/
 
+export const appPrefix = 'kjv';
+
 import { ReadModel } from './Model/ReadModel.js';
 import { ReadView } from './View/ReadView.js';
 import { ReadController } from './Controller/ReadController.js';

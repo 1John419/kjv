@@ -1,6 +1,8 @@
+let appPrefix = 'kjv';
+
 let appCaches = [
   {
-    name: 'kjv-core-20190708.03',
+    name: 'kjv-core-20190709.01',
     urls: [
       './',
       './index.html',
@@ -12,7 +14,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjv-font-20190707.01',
+    name: 'kjv-font-20190709.01',
     urls: [
       './css/font.css',
       './font/lato-v15-latin-regular.woff2',
@@ -24,7 +26,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjv-icon-20190708.02',
+    name: 'kjv-icon-20190709.01',
     urls: [
       './png/icon-32.png',
       './png/icon-192.png',
@@ -35,7 +37,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjv-help-20190708.01',
+    name: 'kjv-help-20190709.01',
     urls: [
       './help/about.html',
       './help/book-chapter.html',
@@ -54,8 +56,9 @@ let cacheNames = appCaches.map((cache) => cache.name);
 
 self.addEventListener('install', function(event) {
   event.waitUntil(caches.keys().then(function(keys) {
+    let appKeys = keys.filter(key => key.startsWith(appPrefix));
     return Promise.all(appCaches.map(function(appCache) {
-      if (keys.indexOf(appCache.name) === -1) {
+      if (appKeys.indexOf(appCache.name) === -1) {
         return caches.open(appCache.name).then(function(cache) {
           console.log(`Caching: ${appCache.name}`);
           return cache.addAll(appCache.urls);
@@ -72,7 +75,8 @@ self.addEventListener('install', function(event) {
 self.addEventListener('activate', function(event) {
   event.waitUntil(
     caches.keys().then(function(keys) {
-      return Promise.all(keys.map(function(key) {
+      let appKeys = keys.filter(key => key.startsWith(appPrefix));
+      return Promise.all(appKeys.map(function(key) {
         if (cacheNames.indexOf(key) === -1) {
           console.log(`Deleting: ${key}`);
           return caches.delete(key);

@@ -2,6 +2,8 @@
 
 import { bus } from '../EventBus.js';
 
+import { appPrefix } from '../app.js';
+
 class ReadModel {
 
   constructor() {
@@ -15,7 +17,7 @@ class ReadModel {
   }
 
   getColumn() {
-    let column = localStorage.getItem('column');
+    let column = localStorage.getItem(`${appPrefix}-column`);
     if (!column) {
       column = 1;
     } else {
@@ -25,7 +27,7 @@ class ReadModel {
   }
 
   getSidebar() {
-    let sidebar = localStorage.getItem('sidebar');
+    let sidebar = localStorage.getItem(`${appPrefix}-sidebar`);
     if (!sidebar) {
       sidebar = this.panes > 1 ? 'book' : 'none';
     } else {
@@ -54,11 +56,11 @@ class ReadModel {
   }
 
   saveColumn() {
-    localStorage.setItem('column', JSON.stringify(this.column));
+    localStorage.setItem(`${appPrefix}-column`, JSON.stringify(this.column));
   }
 
   saveSidebar() {
-    localStorage.setItem('sidebar', JSON.stringify(this.sidebar));
+    localStorage.setItem(`${appPrefix}-sidebar`, JSON.stringify(this.sidebar));
   }
 
   sidebarChange(sidebar) {

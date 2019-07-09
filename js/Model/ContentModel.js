@@ -6,6 +6,8 @@ import { tome } from '../Tome/tome.js';
 
 import { idxBook } from '../tomeIdx.js';
 
+import { appPrefix } from '../app.js';
+
 import { getChapterName } from '../util.js';
 
 class ContentModel {
@@ -51,7 +53,7 @@ class ContentModel {
   }
 
   getChapterPkg() {
-    let chapterPkg = localStorage.getItem('chapterPkg');
+    let chapterPkg = localStorage.getItem(`${appPrefix}-chapterPkg`);
     if (!chapterPkg) {
       chapterPkg = this.buildChapterPkg(0);
     } else {
@@ -65,7 +67,7 @@ class ContentModel {
   }
 
   saveChapterPkg() {
-    localStorage.setItem('chapterPkg', JSON.stringify(this.chapterPkg));
+    localStorage.setItem(`${appPrefix}-chapterPkg`, JSON.stringify(this.chapterPkg));
   }
 
   subscribe() {

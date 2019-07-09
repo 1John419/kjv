@@ -4,6 +4,8 @@ import { bus } from '../EventBus.js';
 
 import { tome } from '../Tome/tome.js';
 
+import { appPrefix } from '../app.js';
+
 const numSortAscend = (a, b) => a - b;
 const numSortDescend = (a, b) => b - a;
 
@@ -170,7 +172,7 @@ class BookmarkModel {
   }
 
   getActiveFolder() {
-    let activeFolder = localStorage.getItem('activeFolder');
+    let activeFolder = localStorage.getItem(`${appPrefix}-activeFolder`);
     if (!activeFolder) {
       activeFolder = 'Default';
     } else {
@@ -202,7 +204,7 @@ class BookmarkModel {
   }
 
   getFolders() {
-    let folders = localStorage.getItem('folders');
+    let folders = localStorage.getItem(`${appPrefix}-folders`);
     if (!folders) {
       folders = this.createFolders();
     } else {
@@ -271,11 +273,11 @@ class BookmarkModel {
   }
 
   saveActiveFolder() {
-    localStorage.setItem('activeFolder', JSON.stringify(this.activeFolder));
+    localStorage.setItem(`${appPrefix}-activeFolder`, JSON.stringify(this.activeFolder));
   }
 
   saveFolders() {
-    localStorage.setItem('folders', JSON.stringify(this.folders));
+    localStorage.setItem(`${appPrefix}-folders`, JSON.stringify(this.folders));
     bus.publish('folders.update', this.folders);
   }
 

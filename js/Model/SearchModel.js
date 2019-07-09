@@ -2,6 +2,8 @@
 
 import { bus } from '../EventBus.js';
 
+import { appPrefix } from '../app.js';
+
 import { SearchEngine } from '../SearchEngine.js';
 
 class SearchModel {
@@ -25,7 +27,7 @@ class SearchModel {
   }
 
   getFilter() {
-    let value = localStorage.getItem('filter');
+    let value = localStorage.getItem(`${appPrefix}-filter`);
     if (!value) {
       this.resetFilter();
       return;
@@ -36,7 +38,7 @@ class SearchModel {
   }
 
   getHistory() {
-    let value = localStorage.getItem('history');
+    let value = localStorage.getItem(`${appPrefix}-history`);
     if (!value) {
       this.history = [];
       this.saveHistory();
@@ -47,7 +49,7 @@ class SearchModel {
   }
 
   getQuery() {
-    let value = localStorage.getItem('query');
+    let value = localStorage.getItem(`${appPrefix}-query`);
     if (!value) {
       this.query = '';
       this.saveQuery();
@@ -107,15 +109,15 @@ class SearchModel {
   }
 
   saveFilter() {
-    localStorage.setItem('filter', JSON.stringify(this.filter));
+    localStorage.setItem(`${appPrefix}-filter`, JSON.stringify(this.filter));
   }
 
   saveHistory() {
-    localStorage.setItem('history', JSON.stringify(this.history));
+    localStorage.setItem(`${appPrefix}-history`, JSON.stringify(this.history));
   }
 
   saveQuery() {
-    localStorage.setItem('query', JSON.stringify(this.query));
+    localStorage.setItem(`${appPrefix}-query`, JSON.stringify(this.query));
   }
 
   searchGet() {

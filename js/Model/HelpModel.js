@@ -2,6 +2,8 @@
 
 import { bus } from '../EventBus.js';
 
+import { appPrefix } from '../app.js';
+
 class HelpModel {
 
   constructor() {
@@ -15,7 +17,7 @@ class HelpModel {
   }
 
   getTopic() {
-    let topic = localStorage.getItem('topic');
+    let topic = localStorage.getItem(`${appPrefix}-topic`);
     if (!topic) {
       topic = 'overview';
     } else {
@@ -33,7 +35,7 @@ class HelpModel {
   }
 
   saveTopic() {
-    localStorage.setItem('topic', JSON.stringify(this.topic));
+    localStorage.setItem(`${appPrefix}-topic`, JSON.stringify(this.topic));
   }
 
   subscribe() {
