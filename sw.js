@@ -24,7 +24,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'kjv-icon-20190708.01',
+    name: 'kjv-icon-20190708.02',
     urls: [
       './png/icon-32.png',
       './png/icon-192.png',
