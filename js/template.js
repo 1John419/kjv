@@ -1,138 +1,150 @@
 'use strict';
 
+import {
+  tomeAcrostics,
+} from './data/tomeDb.js';
+
 const svgNS = 'http://www.w3.org/2000/svg';
 const xlinkNS = 'http://www.w3.org/1999/xlink';
 
-export const templateActionMenu = (modifier, actionSet) => {
+export const templateAcrostic = (verseObj) => {
+  let acrosticSpan = undefined;
+  if (tomeAcrostics) {
+    let acrostic = tomeAcrostics[verseObj.k];
+    if (acrostic) {
+      let glyph = acrostic.slice(0, 1);
+      let xlit = acrostic.slice(1);
+      let glyphSpan = templateElement('span', 'font--hebrew', null, '', glyph);
+      let xlitSpan = templateElement('span', 'font--bold', null, '', xlit + ' ');
+      acrosticSpan = document.createDocumentFragment();
+      acrosticSpan.appendChild(glyphSpan);
+      acrosticSpan.appendChild(xlitSpan);
+    }
+  }
+  return acrosticSpan;
+};
+
+export const templateActionMenu = (cssModifier, actionSet) => {
   let actionMenu = templateElement(
-    'div', 'action-menu', modifier, null, null);
+    'div', 'action-menu', cssModifier, null, null);
   actionMenu.classList.add('action-menu--hide');
   for (let btn of actionSet) {
-    let element = templateBtnIcon(btn.icon, btn.label);
+    let element = templateBtnIcon(btn.icon, btn.icon, btn.label);
     actionMenu.appendChild(element);
   }
   return actionMenu;
 };
 
-export const templateBtnIcon = (svgId, label) => {
-  let svg = document.createElementNS(svgNS, 'svg');
-  svg.classList.add('btn-icon__svg');
+export const templateBtnIcon = (svgId, cssModifier, ariaLabel) => {
+  let svgTag = document.createElementNS(svgNS, 'svg');
+  svgTag.classList.add('icon-svg');
   let useTag = document.createElementNS(svgNS, 'use');
-  useTag.classList.add('btn-icon__use', `btn-icon__use--${svgId}`);
   useTag.setAttributeNS(xlinkNS, 'xlink:href', `icons.svg#${svgId}`);
-  svg.appendChild(useTag);
+  svgTag.appendChild(useTag);
   let btnIcon = templateElement(
-    'button', 'btn-icon', svgId, label, null);
-  btnIcon.appendChild(svg);
+    'button', 'btn-icon', cssModifier, ariaLabel, null);
+  btnIcon.appendChild(svgTag);
   return btnIcon;
 };
 
-export const templateDivDialog = (modifier, toolSet) => {
+export const templateDivDialog = (cssModifier, toolSet) => {
   let divDialog = templateElement(
-    'div', 'dialog', modifier, null, null);
+    'div', 'dialog', cssModifier, null, null);
   let divDialogBtns = templateElement(
-    'div', 'dialog-btns', modifier, null, null);
+    'div', 'dialog-btns', cssModifier, null, null);
   for (let tool of toolSet) {
     let element;
-    switch (tool.type) {
-      case 'btn':
-        element = templateElement(
-          'button', 'btn-dialog', tool.id, tool.label, tool.label);
-        divDialogBtns.appendChild(element);
-        break;
-      case 'input':
-        element = templateInput('dialog-input', modifier, tool.label);
-        divDialog.appendChild(element);
-        break;
-      case 'label':
-        element = templateElement(
-          'div', 'dialog-label', modifier, null, null);
-        if (tool.text) {
-          element.textContent = tool.text;
-        }
-        divDialog.appendChild(element);
-        break;
-      case 'textarea':
-        element = templateElement(
-          'textarea', 'dialog-textarea', modifier, tool.label, null);
-        divDialog.appendChild(element);
+    if (tool.type === 'btn') {
+      element = templateElement(
+        'button', 'btn-dialog', tool.cssModifier, tool.ariaLabel, tool.ariaLabel);
+      divDialogBtns.appendChild(element);
+    } else if (tool.type === 'input') {
+      element = templateInput('dialog-input', cssModifier, tool.ariaLabel);
+      divDialog.appendChild(element);
+    } else if (tool.type === 'label') {
+      element = templateElement(
+        'div', 'dialog-label', cssModifier, null, null);
+      if (tool.text) {
+        element.textContent = tool.text;
+      }
+      divDialog.appendChild(element);
+    } else if (tool.type === 'textarea') {
+      element = templateElement(
+        'textarea', 'dialog-textarea', cssModifier, tool.ariaLabel, null);
+      divDialog.appendChild(element);
     }
   }
   divDialog.appendChild(divDialogBtns);
   return divDialog;
 };
 
-export const templateElement = (tagName, block, modifier, label, content) => {
+export const templateElement = (tagName, cssBlock, cssModifier, ariaLabel, textContent) => {
   let element = document.createElement(tagName);
-  element.classList.add(block);
-  if (modifier) {
-    element.classList.add(`${block}--${modifier}`);
+  element.classList.add(cssBlock);
+  if (cssModifier) {
+    element.classList.add(`${cssBlock}--${cssModifier}`);
   }
-  if (label) {
-    element.setAttribute('aria-label', label);
+  if (ariaLabel) {
+    element.setAttribute('aria-label', ariaLabel);
   }
-  if (content) {
-    element.textContent = content;
+  if (textContent) {
+    element.textContent = textContent;
   }
   return element;
 };
 
-export const templateInput = (block, modifier, label) => {
+export const templateInput = (cssBlock, cssModifier, ariaLabel) => {
   let input = templateElement(
-    'input', block, modifier, label, null);
+    'input', cssBlock, cssModifier, ariaLabel, null);
   input.setAttribute('type', 'text');
   return input;
 };
 
-export const templatePage = (modifier) => {
+export const templatePage = (cssModifier) => {
   let page = templateElement(
-    'div', 'page', modifier, null, null);
+    'div', 'page', cssModifier, null, null);
   page.classList.add('page--hide');
   return page;
 };
 
-export const templatePageScroll = (modifier) => {
+export const templateScroll = (cssModifier) => {
   let scroll = templateElement(
-    'div', 'page__scroll', modifier, null, null);
+    'div', 'scroll', cssModifier, null, null);
   return scroll;
 };
 
-export const templatePageToolbar = (modifier) => {
+export const templateToolbar = (cssModifier) => {
   let toolbar = templateElement(
-    'div', 'page__toolbar', modifier, null, null);
+    'div', 'toolbar', cssModifier, null, null);
   return toolbar;
 };
 
 export const templateToolbarLower = (toolSet) => {
-  let toolbarLower = templatePageToolbar('lower');
+  let toolbarLower = templateToolbar('lower');
   for (let tool of toolSet) {
     let element;
-    switch (tool.type) {
-      case 'btn':
-        element = templateBtnIcon(tool.icon, tool.label);
-        toolbarLower.appendChild(element);
-        break;
-      case 'input':
-        element = templateInput('input', tool.modifier, tool.label);
-        toolbarLower.appendChild(element);
+    if (tool.type === 'btn') {
+      element = templateBtnIcon(tool.icon, tool.icon, tool.ariaLabel);
+      toolbarLower.appendChild(element);
+    } else if (tool.type === 'input') {
+      element = templateInput('input', tool.modifier, tool.ariaLabel);
+      toolbarLower.appendChild(element);
     }
   }
   return toolbarLower;
 };
 
 export const templateToolbarUpper = (toolSet) => {
-  let toolbarUpper = templatePageToolbar('upper');
+  let toolbarUpper = templateToolbar('upper');
   for (let tool of toolSet) {
     let element;
-    switch (tool.type) {
-      case 'btn':
-        element = templateBtnIcon(tool.icon, tool.label);
-        toolbarUpper.appendChild(element);
-        break;
-      case 'banner':
-        element = templateElement(
-          'div', 'banner', tool.modifier, null, tool.text);
-        toolbarUpper.appendChild(element);
+    if (tool.type === 'btn') {
+      element = templateBtnIcon(tool.icon, tool.icon, tool.ariaLabel);
+      toolbarUpper.appendChild(element);
+    } else if (tool.type === 'banner') {
+      element = templateElement(
+        'div', 'banner', tool.cssModifier, null, tool.text);
+      toolbarUpper.appendChild(element);
     }
   }
   return toolbarUpper;

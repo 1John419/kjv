@@ -1,6 +1,12 @@
 'use strict';
 
-import { bus } from '../EventBus.js';
+import queue from '../CommandQueue.js';
+
+const SIDEBAR_WIDTH = 320;
+
+const mqlOnePane = window.matchMedia('screen and (max-width: 639px)');
+const mqlTwoPanes = window.matchMedia('screen and (min-width: 640px) and (max-width: 959px)');
+const mqlThreePanes = window.matchMedia('screen and (min-width: 960px)');
 
 class ReadController {
 
@@ -8,167 +14,172 @@ class ReadController {
     this.initialize();
   }
 
-  actionColumnSelect(column) {
-    this.column = column;
-    bus.publish('column.change', column);
+  bookmarkAdd(verseIdx) {
+    queue.publish('bookmark.add', verseIdx);
   }
 
-  actionReadBookmarkAdd(verseIdx) {
-    bus.publish('bookmark.add', verseIdx);
-    bus.publish('bookmark.scroll-to-top', null);
+  bookmarkDelete(verseIdx) {
+    queue.publish('bookmark.delete', verseIdx);
   }
 
-  actionReadBookmarkDelete(verseIdx) {
-    bus.publish('bookmark.delete', verseIdx);
+  columnModeToggle() {
+    queue.publish('read.column-mode.toggle', null);
   }
 
-  actionReadNextChapter() {
-    bus.publish('chapter.next');
-    bus.publish('read.scroll-to-top', null);
-  }
-
-  actionReadPrevChapter() {
-    bus.publish('chapter.prev');
-    bus.publish('read.scroll-to-top', null);
-  }
-
-  chapterPkgUpdate(chapterPkg) {
-    this.chapterPkg = chapterPkg;
-  }
-
-  columnUpdate(column) {
-    this.column = column;
+  columnModeUpdate(columnMode) {
+    this.columnMode = columnMode;
   }
 
   decreasePanes() {
     if (this.panes === 1) {
       this.lastSidebar = this.sidebar;
-      bus.publish('sidebar.change', 'none');
-      bus.publish('action.column.select', 1);
-      return;
+      queue.publish('sidebar.change', 'none');
     }
-    if (this.panes === 2) {
-      bus.publish('action.column.select', 1);
-      return;
-    }
-    if (this.panes === 3 && this.column > 1) {
-      bus.publish('action.column.select', 2);
-      return;
+    if (this.columnMode && this.panes < 3) {
+      queue.publish('read.column-mode.toggle', null);
     }
   }
 
   increasePanes() {
-    if (this.currentPanes > 1) {
-      return;
+    if (this.currentPanes === 1) {
+      if (this.sidebar !== 'none') {
+        queue.publish('read.show', null);
+      } else if (this.lastSidebar === null) {
+        queue.publish('sidebar.change', 'navigator');
+      } else {
+        queue.publish('sidebar.change', this.lastSidebar);
+      }
     }
-    if (this.sidebar !== 'none') {
-      bus.publish('read.show', null);
-      return;
-    }
-    if (this.lastSidebar === null) {
-      bus.publish('sidebar.change', 'book');
-      return;
-    }
-    bus.publish('sidebar.change', this.lastSidebar);
   }
 
   initialize() {
     this.subscribe();
     this.sidebar = null;
     this.lastSidebar = null;
+    this.panes = null;
+    this.currentPanes = null;
+    this.PaneListeners();
   }
 
   initializeApp() {
     this.setPanes();
     this.currentPanes = this.panes;
-    bus.publish('bookmark.get', null);
-    bus.publish('content.get', null);
-    bus.publish('search.get', null);
-    bus.publish('setting.get', null);
-    bus.publish('help.get', null);
-    bus.publish('read.get', null);
+    queue.publish('bookmark.restore', null);
+    queue.publish('navigator.restore', null);
+    queue.publish('search.restore', null);
+    queue.publish('setting.restore', null);
+    queue.publish('help.restore', null);
+    queue.publish('read.restore', null);
+  }
+
+  nextChapter() {
+    queue.publish('chapter.next', null);
+  }
+
+  PaneListeners() {
+    mqlOnePane.addEventListener('change', (event) => {
+      if (event.matches) {
+        this.updatePanes();
+      }
+    });
+    mqlTwoPanes.addEventListener('change',  (event) => {
+      if (event.matches) {
+        this.updatePanes();
+      }
+    });
+    mqlThreePanes.addEventListener('change',  (event) => {
+      if (event.matches) {
+        this.updatePanes();
+      }
+    });
+  }
+
+  prevChapter() {
+    queue.publish('chapter.prev', null);
   }
 
   setPanes() {
-    this.panes = Math.min(Math.floor(window.innerWidth / 320), 4);
-    bus.publish('panes.change', this.panes);
+    if (mqlOnePane.matches) {
+      this.panes = 1;
+    } else if (mqlTwoPanes.matches) {
+      this.panes = 2;
+    } else if (mqlThreePanes.matches) {
+      this.panes = 3;
+    } 
+    queue.publish('panes.change', this.panes);
   }
 
-  sidebarClick(sidebar) {
-    bus.publish('sidebar.change', sidebar);
+  sidebarSelect(sidebar) {
+    queue.publish('sidebar.change', sidebar);
   }
 
   sidebarUpdate(sidebar) {
-    if (sidebar === this.sidebar) {
-      return;
-    }
-    if (sidebar === 'none') {
-      this.lastSidebar = this.sidebar;
-      bus.publish(`${this.sidebar}.hide`, null);
-      this.sidebar = sidebar;
-      bus.publish('read.show', null);
-      return;
-    }
-    if (this.panes === 1) {
-      if (this.sidebar === 'none') {
-        bus.publish('read.hide', null);
+    if (sidebar !== this.sidebar) {
+      if (sidebar === 'none') {
+        this.lastSidebar = this.sidebar;
+        queue.publish(`${this.sidebar}.hide`, null);
+        this.sidebar = sidebar;
+        queue.publish('read.show', null);
+      } else if (this.panes === 1) {
+        if (this.sidebar === 'none') {
+          queue.publish('read.hide', null);
+        } else {
+          queue.publish(`${this.sidebar}.hide`, null);
+        }
+        this.sidebar = sidebar;
+        queue.publish(`${this.sidebar}.show`, null);
       } else {
-        bus.publish(`${this.sidebar}.hide`, null);
+        if (this.sidebar && this.sidebar !== 'none') {
+          queue.publish(`${this.sidebar}.hide`, null);
+        }
+        this.sidebar = sidebar;
+        queue.publish(`${this.sidebar}.show`, null);
       }
-      this.sidebar = sidebar;
-      bus.publish(`${this.sidebar}.show`, null);
-      return;
     }
-    bus.publish('read.show', null);
-    bus.publish(`${this.sidebar}.hide`, null);
-    this.sidebar = sidebar;
-    bus.publish(`${this.sidebar}.show`, null);
   }
 
   subscribe() {
-    bus.subscribe('action.column.select',
-      (column) => { this.actionColumnSelect(column); }
-    );
-    bus.subscribe('action.read.bookmark-add',
-      (verseIdx) => { this.actionReadBookmarkAdd(verseIdx); }
-    );
-    bus.subscribe('action.read.bookmark-delete',
-      (verseIdx) => { this.actionReadBookmarkDelete(verseIdx); }
-    );
-    bus.subscribe('action.read.next-chapter',
-      () => { this.actionReadNextChapter(); }
-    );
-    bus.subscribe('action.read.prev-chapter',
-      () => { this.actionReadPrevChapter(); }
-    );
-    bus.subscribe('action.sidebar.select', (sidebar) => {
-      this.sidebarClick(sidebar);
+    queue.subscribe('read.bookmark.add', (verseIdx) => {
+      this.bookmarkAdd(verseIdx);
     });
-    bus.subscribe('chapterPkg.update', (chapterPkg) => {
-      this.chapterPkgUpdate(chapterPkg);
+    queue.subscribe('read.bookmark.delete', (verseIdx) => {
+      this.bookmarkDelete(verseIdx);
     });
-    bus.subscribe('column.update', (column) => {
-      this.columnUpdate(column);
+
+    queue.subscribe('read.column-mode.click', () => {
+      this.columnModeToggle();
     });
-    bus.subscribe('sidebar.update', (sidebar) => {
+    queue.subscribe('read.column-mode.update', (columnMode) => {
+      this.columnModeUpdate(columnMode);
+    });
+
+    queue.subscribe('read.next.chapter', () => {
+      this.nextChapter();
+    });
+
+    queue.subscribe('read.prev.chapter', () => {
+      this.prevChapter();
+    });
+
+    queue.subscribe('sidebar.select', (sidebar) => {
+      this.sidebarSelect(sidebar);
+    });
+    queue.subscribe('sidebar.update', (sidebar) => {
       this.sidebarUpdate(sidebar);
     });
-    bus.subscribe('window.resize', () => {
-      this.updatePanes();
-    });
+
   }
 
   updatePanes() {
     this.setPanes();
-    if (this.currentPanes === this.panes) {
-      return;
+    if (this.currentPanes !== this.panes) {
+      if (this.currentPanes > this.panes) {
+        this.decreasePanes();
+      } else {
+        this.increasePanes();
+      }
+      this.currentPanes = this.panes;
     }
-    if (this.currentPanes > this.panes) {
-      this.decreasePanes();
-    } else {
-      this.increasePanes();
-    }
-    this.currentPanes = this.panes;
   }
 
 }

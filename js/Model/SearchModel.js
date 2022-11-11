@@ -1,10 +1,15 @@
 'use strict';
 
-import { bus } from '../EventBus.js';
-
-import { appPrefix } from '../util.js';
-
+import queue from '../CommandQueue.js';
 import { SearchEngine } from '../SearchEngine.js';
+import { tomeBinVerses } from '../data/binIdx.js';
+import { appText, defaultQuery } from '../data/language.js';
+import { tomeDb } from '../data/tomeDb.js';
+
+const searchResultReroute = ['search-filter', 'search-history'];
+const validTasks = ['search-result', 'search-lookup', 'search-filter',
+  'search-history'
+];
 
 class SearchModel {
 
@@ -13,75 +18,49 @@ class SearchModel {
   }
 
   addHistory() {
-    if (this.history.indexOf(this.query) != -1) {
-      return;
+    if (this.searchHistory.indexOf(this.searchQuery) === -1) {
+      this.searchHistory = [this.searchQuery, ...this.searchHistory];
+      this.updateHistory();
     }
-    this.history = [this.query, ...this.history];
-    this.updateHistory();
   }
 
-  filterChange(filter) {
-    this.filter = filter;
+  filterChange(searchFilter) {
+    this.searchFilter = searchFilter;
     this.saveFilter();
-    bus.publish('filter.update', this.filter);
+    queue.publish('search.filter.update', this.searchFilter);
   }
 
-  getFilter() {
-    let value = localStorage.getItem(`${appPrefix}-filter`);
-    if (!value) {
-      this.resetFilter();
-      return;
-    } else {
-      this.filter = JSON.parse(value);
+  filterIsValid(searchFilter) {
+    let result = false;
+    if (typeof searchFilter === 'object') {
+      if (searchFilter.bookIdx && searchFilter.chapterIdx) {
+        result = true;
+      }
     }
-    bus.publish('filter.update', this.filter);
+    return result;
   }
 
-  getHistory() {
-    let value = localStorage.getItem(`${appPrefix}-history`);
-    if (!value) {
-      this.history = [];
-      this.saveHistory();
-    } else {
-      this.history = JSON.parse(value);
-    }
-    bus.publish('history.update', this.history);
+  historyChange(searchHistory) {
+    this.searchHistory = searchHistory;
+    this.saveHistory();
+    queue.publish('search.history.update', this.searchHistory);
   }
 
-  getQuery() {
-    let value = localStorage.getItem(`${appPrefix}-query`);
-    if (!value) {
-      this.query = '';
-      this.saveQuery();
-    } else {
-      this.query = JSON.parse(value);
-    }
-    this.rig = this.engine.performSearch(this.query);
-    bus.publish('rig.update', this.rig);
+  historyClear() {
+    this.searchHistory = [];
+    this.updateHistory();
   }
 
   historyDelete(str) {
-    let index = this.history.indexOf(str);
-    this.history.splice(index, 1);
+    let index = this.searchHistory.indexOf(str);
+    this.searchHistory.splice(index, 1);
     this.updateHistory();
   }
 
-  historyDown(str) {
-    let index = this.history.indexOf(str);
-    if (index === (this.history.length - 1) || index === -1) {
-      return;
-    }
-    this.reorderHistory(index, index + 1);
-    this.updateHistory();
-  }
-
-  historyUp(str) {
-    let index = this.history.indexOf(str);
-    if (index === 0 || index === -1) {
-      return;
-    }
-    this.reorderHistory(index, index - 1);
-    this.updateHistory();
+  historyIsValid(searchHistory) {
+    return searchHistory.some((x) => {
+      return typeof x === 'string';
+    });
   }
 
   initialize() {
@@ -89,75 +68,181 @@ class SearchModel {
     this.subscribe();
   }
 
-  queryChange(query) {
-    this.query = query;
-    this.saveQuery();
-    this.updateRig();
-    this.resetFilter();
-  }
-
-  reorderHistory(fromIdx, toIdx) {
-    this.history.splice(toIdx, 0, this.history.splice(fromIdx, 1)[0]);
+  async queryChange(searchQuery) {
+    let rig = await this.engine.performSearch(searchQuery);
+    if (rig.state === 'ERROR') {
+      let message;
+      if (rig.type === 'EMPTY') {
+        message = `${appText.enterSearchExpression}`;
+      } else if (rig.type === 'INVALID') {
+        message = `${appText.invalidQueryExpression}`;
+      } else if (rig.wordStatus !== 'OK') {
+        message = rig.wordStatus;
+      }
+      queue.publish('search.query.error', message);
+    } else {
+      this.rig = rig;
+      this.searchQuery = searchQuery;
+      this.saveQuery();
+      this.addHistory();
+      await this.updateSearchVerses();
+      queue.publish('rig.update', this.rig);
+      this.resetFilter();
+      queue.publish('search.query.update', this.searchQuery);
+    }
   }
 
   resetFilter() {
-    let filter = {
-      bookIdx: null,
-      chapterIdx: null
-    };
+    let filter = this.tomeFilter();
     this.filterChange(filter);
   }
 
+  async restore() {
+    this.restoreTask();
+    this.restoreHistory();
+    await this.restoreQuery();
+    this.restoreFilter();
+  }
+
+  restoreFilter() {
+    let defaultFilter = this.tomeFilter();
+    let searchFilter = localStorage.getItem('searchFilter');
+    if (!searchFilter) {
+      searchFilter = defaultFilter;
+    } else {
+      try {
+        searchFilter = JSON.parse(searchFilter);
+      } catch (error) {
+        searchFilter = defaultFilter;
+      }
+      if (!this.filterIsValid(searchFilter)) {
+        searchFilter = defaultFilter;
+      }
+    }
+    this.filterChange(searchFilter);
+  }
+
+  restoreHistory() {
+    let defaultHistory = [];
+    let searchHistory = localStorage.getItem('searchHistory');
+    if (!searchHistory) {
+      searchHistory = defaultHistory;
+    } else {
+      try {
+        searchHistory = JSON.parse(searchHistory);
+      } catch (error) {
+        searchHistory = defaultHistory;
+      }
+      if (!Array.isArray(searchHistory)) {
+        searchHistory = defaultHistory;
+      } else {
+        if (!this.historyIsValid(searchHistory)) {
+          searchHistory = defaultHistory;
+        }
+      }
+    }
+    this.historyChange(searchHistory);
+  }
+
+  async restoreQuery() {
+    let searchQuery = localStorage.getItem('searchQuery');
+    if (!searchQuery) {
+      searchQuery = defaultQuery;
+    } else {
+      try {
+        searchQuery = JSON.parse(searchQuery);
+      } catch (error) {
+        searchQuery = defaultQuery;
+      }
+      if (typeof searchQuery !== 'string') {
+        searchQuery = defaultQuery;
+      }
+    }
+    await this.queryChange(searchQuery);
+  }
+
+  restoreTask() {
+    let defaultTask = 'search-result';
+    let searchTask = localStorage.getItem('searchTask');
+    if (!searchTask) {
+      searchTask = defaultTask;
+    } else {
+      searchTask = JSON.parse(searchTask);
+    }
+    if (searchResultReroute.includes(searchTask)) {
+      searchTask = 'search-result';
+    } else if (!validTasks.includes(searchTask)) {
+      searchTask = defaultTask;
+    }
+    this.taskChange(searchTask);
+  }
+
   saveFilter() {
-    localStorage.setItem(`${appPrefix}-filter`, JSON.stringify(this.filter));
+    localStorage.setItem('searchFilter',
+      JSON.stringify(this.searchFilter));
   }
 
   saveHistory() {
-    localStorage.setItem(`${appPrefix}-history`, JSON.stringify(this.history));
+    localStorage.setItem('searchHistory',
+      JSON.stringify(this.searchHistory));
   }
 
   saveQuery() {
-    localStorage.setItem(`${appPrefix}-query`, JSON.stringify(this.query));
+    localStorage.setItem('searchQuery',
+      JSON.stringify(this.searchQuery));
   }
 
-  searchGet() {
-    this.getHistory();
-    this.getQuery();
-    this.getFilter();
+  saveTask() {
+    localStorage.setItem('searchTask',
+      JSON.stringify(this.searchTask));
   }
 
   subscribe() {
-    bus.subscribe('filter.change', (filter) => {
+    queue.subscribe('search.filter.change', (filter) => {
       this.filterChange(filter);
     });
-    bus.subscribe('history.delete', (query) => {
+
+    queue.subscribe('search.history.clear', () => {
+      this.historyClear();
+    });
+    queue.subscribe('search.history.delete', (query) => {
       this.historyDelete(query);
     });
-    bus.subscribe('history.down', (query) => {
-      this.historyDown(query);
+
+    queue.subscribe('search.query.change', async (query) => {
+      await this.queryChange(query);
     });
-    bus.subscribe('history.up', (query) => {
-      this.historyUp(query);
+
+    queue.subscribe('search.restore', async () => {
+      await this.restore();
     });
-    bus.subscribe('query.change', (query) => {
-      this.queryChange(query);
+    queue.subscribe('search.task.change', (searchTask) => {
+      this.taskChange(searchTask);
     });
-    bus.subscribe('search.get', () => {
-      this.searchGet();
-    });
+  }
+
+  taskChange(searchTask) {
+    this.searchTask = searchTask;
+    this.saveTask();
+    queue.publish('search.task.update', this.searchTask);
+  }
+
+  tomeFilter() {
+    return {
+      bookIdx: -1,
+      chapterIdx: -1
+    };
   }
 
   updateHistory() {
     this.saveHistory();
-    bus.publish('history.update', this.history);
+    queue.publish('search.history.update', this.searchHistory);
   }
 
-  updateRig() {
-    this.rig = this.engine.performSearch(this.query);
-    if (this.rig.state === 'OK') {
-      this.addHistory();
-    }
-    bus.publish('rig.update', this.rig);
+  async updateSearchVerses() {
+    this.searchVerseObjs = await tomeDb.verses.bulkGet(
+      this.rig.tomeBin[tomeBinVerses]);
+    queue.publish('search.verses.update', this.searchVerseObjs);
   }
 
 }

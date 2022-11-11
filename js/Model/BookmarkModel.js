@@ -1,13 +1,22 @@
 'use strict';
 
-import { bus } from '../EventBus.js';
-
-import { tome } from '../Tome/tome.js';
-
-import { appPrefix } from '../util.js';
+import queue from '../CommandQueue.js';
+import { tomeName } from '../data/dbUtil.js';
+import { appText } from '../data/language.js';
+import {
+  tomeDb,
+  tomeVerseCount
+} from '../data/tomeDb.js';
 
 const numSortAscend = (a, b) => a - b;
-const numSortDescend = (a, b) => b - a;
+
+const bookmarkFolderReroute = ['bookmark-folder-add', 'bookmark-folder-delete',
+  'bookmark-folder-rename', 'bookmark-export', 'bookmark-import'
+];
+const bookmarkListReroute = ['bookmark-move-copy'];
+const validTasks = ['bookmark-list', 'bookmark-folder'];
+
+const firstEntry = 0;
 
 class BookmarkModel {
 
@@ -15,82 +24,25 @@ class BookmarkModel {
     this.initialize();
   }
 
-  bookmarkAdd(verseIdx) {
-    let bookmarks = this.folder.bookmarks;
+  async activeFolderChange(activeFolderName) {
+    this.activeFolderName = activeFolderName;
+    this.updateActiveFolderName();
+    await this.updateActiveFolder();
+  }
+
+  async add(verseIdx) {
+    let bookmarks = this.activeFolder.bookmarks;
     if (bookmarks.indexOf(verseIdx) === -1) {
-      this.folder.bookmarks = [verseIdx, ...bookmarks];
-      this.updateFolder();
+      this.activeFolder.bookmarks = [verseIdx, ...bookmarks];
+      this.updateFolders();
+      await this.updateActiveFolder();
     }
   }
 
-  bookmarkCopy(copyPkg) {
+  copy(copyPkg) {
     let toFolder = this.getFolder(copyPkg.to);
-    toFolder.bookmarks = [copyPkg.verseIdx, ...toFolder.bookmarks];
-    this.updateFolder();
-  }
-
-  bookmarkDelete(verseIdx) {
-    let bookmarks = this.folder.bookmarks;
-    let index = bookmarks.indexOf(verseIdx);
-    if (index !== -1) {
-      bookmarks.splice(index, 1);
-      this.updateFolder();
-    }
-  }
-
-  bookmarkDown(verseIdx) {
-    let bookmarks = this.folder.bookmarks;
-    let index = bookmarks.indexOf(verseIdx);
-    if (index !== bookmarks.length - 1 && index !== -1) {
-      this.reorderBookmarks(index, index + 1);
-    }
-  }
-
-  bookmarkGet() {
-    this.getFolders();
-    this.getActiveFolder();
-  }
-
-  bookmarkMove(movePkg) {
-    let toFolder = this.getFolder(movePkg.to);
-    toFolder.bookmarks = [movePkg.verseIdx, ...toFolder.bookmarks];
-
-    let bookmarks = this.folder.bookmarks;
-    let index = bookmarks.indexOf(movePkg.verseIdx);
-    if (index !== -1) {
-      bookmarks.splice(index, 1);
-      this.updateFolder();
-    }
-  }
-
-  bookmarkSort(sorter) {
-    let bookmarks = this.folder.bookmarks;
-    if (bookmarks.length !== 0) {
-      bookmarks.sort(sorter);
-      this.updateFolder();
-    }
-  }
-
-  bookmarkSortInvert() {
-    let bookmarks = this.folder.bookmarks;
-    bookmarks.reverse();
-    this.updateFolder();
-  }
-
-  bookmarkUp(verseIdx) {
-    let bookmarks = this.folder.bookmarks;
-    let index = bookmarks.indexOf(verseIdx);
-    if (index === 0 || index === -1) {
-      return;
-    }
-    this.reorderBookmarks(index, index - 1);
-  }
-
-  changeActiveFolder(folderName) {
-    this.folder = this.getFolder(folderName);
-    this.activeFolder = folderName;
-    this.saveActiveFolder();
-    this.updateFolder();
+    toFolder.bookmarks.push(copyPkg.verseIdx);
+    this.updateFolders();
   }
 
   createFolder(folderName) {
@@ -101,84 +53,154 @@ class BookmarkModel {
   }
 
   createFolders() {
-    return [this.createFolder('Default')];
+    return [this.createFolder(`${appText.default}`)];
   }
 
-  folderAdd(folderName) {
-    let newFolder = this.getFolder(folderName);
-    if (newFolder) {
-      return;
+  async delete(verseIdx) {
+    let bookmarks = this.activeFolder.bookmarks;
+    let index = bookmarks.indexOf(verseIdx);
+    if (index !== -1) {
+      bookmarks.splice(index, 1);
+      this.updateFolders();
+      await this.updateActiveFolder();
     }
-    newFolder = this.createFolder(folderName);
-    this.folders = [newFolder, ...this.folders];
-    this.folder = this.folders[0];
-    this.activeFolder = folderName;
-    this.saveActiveFolder();
-    this.updateFolder();
   }
 
-  folderChange(folderName) {
-    this.folder = this.getFolder(folderName);
-    this.activeFolder = folderName;
-    this.updateFolder();
+  async down(verseIdx) {
+    let bookmarks = this.activeFolder.bookmarks;
+    let index = bookmarks.indexOf(verseIdx);
+    if (index !== bookmarks.length - 1 && index !== -1) {
+      this.reorderBookmarks(index, index + 1);
+      this.updateFolders();
+      await this.updateActiveFolder();
+    }
   }
 
-  folderDelete(folderName) {
+  expandModeChange(expandMode) {
+    this.expandMode = expandMode;
+    this.saveExpandMode();
+    queue.publish('bookmark.expand-mode.update', this.expandMode);
+  }
+
+  expandModeToogle() {
+    this.expandModeChange(!this.expandMode);
+  }
+
+  async folderAdd(folderName) {
+    let newFolder = this.getFolder(folderName);
+    if (!newFolder) {
+      newFolder = this.createFolder(folderName);
+      this.folders.push(newFolder);
+      this.updateFolders();
+      await this.activeFolderChange(folderName);
+      this.updateFolderList();
+      queue.publish('bookmark.folder.added', null);
+    } else {
+      queue.publish('bookmark.folder.add.error', `${appText.duplicateFolderName}`);
+    }
+  }
+
+  async folderDelete(folderName) {
     let idx = this.getFolderIdx(folderName);
     this.folders.splice(idx, 1);
-    bus.publish('folder.list.update', this.getFolderList());
-    this.resetFolder();
+    if (this.folders.length === 0) {
+      await this.folderAdd(`${appText.default}`);
+    }
+    this.updateFolders();
+    let firstFolderName = this.folders[firstEntry].name;
+    await this.activeFolderChange(firstFolderName);
+    this.updateFolderList();
   }
 
   folderDown(folderName) {
     let index = this.folders.findIndex((folder) => folder.name === folderName);
     if (index !== this.folders.length - 1 && index !== -1) {
       this.reorderFolders(index, index + 1);
-      bus.publish('folder.list.update', this.getFolderList());
+      this.updateFolders();
+      this.updateFolderList();
     }
   }
 
   folderImport(pkgStr) {
     let bookmarkPkg = this.getBookmarkPkg(pkgStr);
     if (!bookmarkPkg) {
-      bus.publish('import.message', 'Invalid JSON string');
-      return;
+      queue.publish('bookmark-import.message', `${appText.invalidJsonString}`);
+    } else {
+      let status = this.validatePkg(bookmarkPkg);
+      if (status === 'OK') {
+        status = this.foldersAreValid(bookmarkPkg.folders);
+      }
+      if (status === 'OK') {
+        this.importPkg(bookmarkPkg);
+      } else {
+        queue.publish('bookmark-import.message', status);
+      }
     }
-    let status = this.validatePkg(bookmarkPkg);
-    if (status === 'OK') {
-      status = this.validateFolders(bookmarkPkg.folders);
-    }
-    if (status !== 'OK') {
-      bus.publish('import.message', status);
-      return;
-    }
-    this.importPkg(bookmarkPkg);
   }
 
-  folderRename(namePkg) {
-    let oldFolder = this.getFolder(namePkg.old);
-    oldFolder.name = namePkg.new;
-    this.activeFolder = namePkg.new;
-    this.saveActiveFolder();
-    this.updateFolder();
+  folderNameIsValid(folderName) {
+    return this.folders.some((folder) => {
+      return folder.name === folderName;
+    });
+  }
+
+  async folderRename(namePkg) {
+    if (namePkg.old === namePkg.new) {
+      queue.publish('bookmark.folder.rename.error', `${appText.duplicateFolderName}`);
+    } else {
+      let oldFolder = this.getFolder(namePkg.old);
+      oldFolder.name = namePkg.new;
+      this.updateFolders();
+      this.updateFolderList();
+      if (this.activeFolderName === namePkg.old) {
+        await this.activeFolderChange(namePkg.new);
+      }
+      queue.publish('bookmark.folder.renamed', null);
+    }
+  }
+
+  foldersAreValid(folders) {
+    let status = 'OK';
+    let error = false;
+    try {
+      folders.some((folder) => {
+        if (
+          !folder.name ||
+          typeof folder.name !== 'string' ||
+          !folder.bookmarks ||
+          !Array.isArray(folder.bookmarks)
+        ) {
+          status = `${appText.invalidFolderStructure}`;
+          error = true;
+        }
+        if (!error) {
+          error = folder.bookmarks.some((bookmark) => {
+            if (
+              !Number.isInteger(bookmark) ||
+              bookmark < 0 ||
+              bookmark > this.maxIdx
+            ) {
+              status = `${appText.invalidVerse}`;
+              error = true;
+            }
+            return error;
+          });
+        }
+        return error;
+      });
+    } catch (error) {
+      status = 'ERROR';
+    }
+    return status;
   }
 
   folderUp(folderName) {
     let index = this.folders.findIndex((folder) => folder.name === folderName);
     if (index !== 0 && index !== -1) {
       this.reorderFolders(index, index - 1);
-      bus.publish('folder.list.update', this.getFolderList());
+      this.updateFolders();
+      this.updateFolderList();
     }
-  }
-
-  getActiveFolder() {
-    let activeFolder = localStorage.getItem(`${appPrefix}-activeFolder`);
-    if (!activeFolder) {
-      activeFolder = 'Default';
-    } else {
-      activeFolder = JSON.parse(activeFolder);
-    }
-    this.changeActiveFolder(activeFolder);
   }
 
   getBookmarkPkg(pkgStr) {
@@ -203,16 +225,6 @@ class BookmarkModel {
     });
   }
 
-  getFolders() {
-    let folders = localStorage.getItem(`${appPrefix}-folders`);
-    if (!folders) {
-      folders = this.createFolders();
-    } else {
-      folders = JSON.parse(folders);
-    }
-    this.folders = folders;
-  }
-
   getFolderList() {
     return this.folders.map((folder) => folder.name);
   }
@@ -222,22 +234,42 @@ class BookmarkModel {
       let targetFolder = this.getFolder(folder.name);
       if (!targetFolder) {
         targetFolder = this.createFolder(folder.name);
-        this.folders = [targetFolder, ...this.folders];
+        this.folders.push(targetFolder);
       }
       for (let verseIdx of folder.bookmarks) {
         let bookmarks = targetFolder.bookmarks;
         if (bookmarks.indexOf(verseIdx) !== -1) {
           continue;
         }
-        targetFolder.bookmarks = [verseIdx, ...bookmarks];
+        targetFolder.bookmarks.push(verseIdx);
       }
     }
-    this.updateFolder();
-    bus.publish('import.message', 'Import successful.');
+    this.updateFolders();
+    this.updateFolderList();
+    queue.publish('bookmark-import.message', `${appText.importSuccessful}`);
   }
 
   initialize() {
+    this.maxIdx = tomeVerseCount - 1;
     this.subscribe();
+  }
+
+  async move(movePkg) {
+    let toFolder = this.getFolder(movePkg.to);
+    toFolder.bookmarks.push(movePkg.verseIdx);
+
+    let bookmarks = this.activeFolder.bookmarks;
+    let index = bookmarks.indexOf(movePkg.verseIdx);
+    if (index !== -1) {
+      bookmarks.splice(index, 1);
+      this.updateFolders();
+      await this.updateActiveFolder(this.activeFolderName);
+    }
+  }
+
+  async moveCopyChange(verseIdx) {
+    this.moveCopyVerseObj = await tomeDb.verses.get(verseIdx);
+    queue.publish('bookmark.move-copy.update', this.moveCopyVerseObj);
   }
 
   moveCopyListChange(verseIdx) {
@@ -245,138 +277,241 @@ class BookmarkModel {
       (folder) => !folder.bookmarks.some((element) => element === verseIdx)
     );
     let moveCopyList = foldersNotFoundIn.map((folder) => folder.name);
-    bus.publish('move-copy.list.update', moveCopyList);
+    queue.publish('bookmark-move-copy.list.update', moveCopyList);
   }
 
   reorderBookmarks(fromIdx, toIdx) {
-    let bookmarks = this.folder.bookmarks;
+    let bookmarks = this.activeFolder.bookmarks;
     bookmarks.splice(
-      toIdx, 0, bookmarks.splice(fromIdx, 1)[0]
+      toIdx, 0, bookmarks.splice(fromIdx, 1)[firstEntry]
     );
-    this.updateFolder();
   }
 
   reorderFolders(fromIdx, toIdx) {
     this.folders.splice(
-      toIdx, 0, this.folders.splice(fromIdx, 1)[0]
+      toIdx, 0, this.folders.splice(fromIdx, 1)[firstEntry]
     );
-    this.updateFolder();
+  }
+
+  async restore() {
+    this.restoreTask();
+    this.restoreFolders();
+    await this.restoreActiveFolderName();
+    this.restoreExpandMode();
+  }
+
+  async restoreActiveFolderName() {
+    let defaultFolderName = `${appText.default}`;
+    let activeFolderName =
+      localStorage.getItem('activeFolderName');
+    if (!activeFolderName) {
+      activeFolderName = defaultFolderName;
+    } else {
+      try {
+        activeFolderName = JSON.parse(activeFolderName);
+      } catch (error) {
+        activeFolderName = defaultFolderName;
+      }
+      if (!this.folderNameIsValid(activeFolderName)) {
+        activeFolderName = defaultFolderName;
+      }
+    }
+    await this.activeFolderChange(activeFolderName);
+  }
+
+  restoreExpandMode() {
+    let defaultMode = false;
+    let expandMode = localStorage.getItem('bookmarkExpandMode');
+    if (!expandMode) {
+      expandMode = defaultMode;
+    } else {
+      try {
+        expandMode = JSON.parse(expandMode);
+      } catch (error) {
+        expandMode = defaultMode;
+      }
+      if (typeof expandMode !== 'boolean') {
+        expandMode = defaultMode;
+      }
+    }
+    this.expandModeChange(expandMode);
+  }
+
+  restoreFolders() {
+    let defaultFolders = this.createFolders();
+    let folders = localStorage.getItem('folders');
+    if (!folders) {
+      folders = defaultFolders;
+    } else {
+      try {
+        folders = JSON.parse(folders);
+      } catch (error) {
+        folders = defaultFolders;
+      }
+      if (!this.foldersAreValid(folders)) {
+        folders = defaultFolders;
+      }
+    }
+    this.folders = folders;
+    this.updateFolders();
     this.updateFolderList();
   }
 
-  resetFolder() {
-    if (this.folders.length === 0) {
-      this.folderAdd('Default');
+  restoreTask() {
+    let defaultTask = 'bookmark-list';
+    let bookmarkTask = localStorage.getItem('bookmarkTask');
+    if (!bookmarkTask) {
+      bookmarkTask = defaultTask;
+    } else {
+      try {
+        bookmarkTask = JSON.parse(bookmarkTask);
+      } catch (error) {
+        bookmarkTask = defaultTask;
+      }
+      if (bookmarkListReroute.includes(bookmarkTask)) {
+        bookmarkTask = 'bookmark-list';
+      } else if (bookmarkFolderReroute.includes(bookmarkTask)) {
+        bookmarkTask = 'bookmark-folder';
+      } else if (!validTasks.includes(bookmarkTask)) {
+        bookmarkTask = defaultTask;
+      }
     }
-    let firstFolder = this.folders[0].name;
-    this.folderChange(firstFolder);
+    this.taskChange(bookmarkTask);
   }
 
-  saveActiveFolder() {
-    localStorage.setItem(`${appPrefix}-activeFolder`, JSON.stringify(this.activeFolder));
+  saveActiveFolderName() {
+    localStorage.setItem('activeFolderName',
+      JSON.stringify(this.activeFolderName));
+  }
+
+  saveBookmarkTask() {
+    localStorage.setItem('bookmarkTask',
+      JSON.stringify(this.bookmarkTask));
+  }
+
+  saveExpandMode() {
+    localStorage.setItem('bookmarkExpandMode',
+      JSON.stringify(this.expandMode));
   }
 
   saveFolders() {
-    localStorage.setItem(`${appPrefix}-folders`, JSON.stringify(this.folders));
-    bus.publish('folders.update', this.folders);
+    localStorage.setItem('folders', JSON.stringify(this.folders));
+  }
+
+  async sort(sorter) {
+    let bookmarks = this.activeFolder.bookmarks;
+    if (bookmarks.length !== 0) {
+      bookmarks.sort(sorter);
+      this.updateFolders();
+      await this.updateActiveFolder(this.activeFolderName);
+    }
+  }
+
+  async sortInvert() {
+    let bookmarks = this.activeFolder.bookmarks;
+    bookmarks.reverse();
+    this.updateFolders();
+    await this.updateActiveFolder(this.activeFolderName);
   }
 
   subscribe() {
-    bus.subscribe('bookmark.add', (verseIdx) => {
-      this.bookmarkAdd(verseIdx);
+    queue.subscribe('bookmark.active-folder.change', async (folderName) => {
+      await this.activeFolderChange(folderName);
     });
-    bus.subscribe('bookmark.copy', (copyPkg) => {
-      this.bookmarkCopy(copyPkg);
+    queue.subscribe('bookmark.add', async (verseIdx) => {
+      await this.add(verseIdx);
     });
-    bus.subscribe('bookmark.delete', (verseIdx) => {
-      this.bookmarkDelete(verseIdx);
+    queue.subscribe('bookmark.copy', (copyPkg) => {
+      this.copy(copyPkg);
     });
-    bus.subscribe('bookmark.down', (verseIdx) => {
-      this.bookmarkDown(verseIdx);
+    queue.subscribe('bookmark.delete', async (verseIdx) => {
+      await this.delete(verseIdx);
     });
-    bus.subscribe('bookmark.get', () => {
-      this.bookmarkGet();
+    queue.subscribe('bookmark.down', async (verseIdx) => {
+      await this.down(verseIdx);
     });
-    bus.subscribe('bookmark.move', (movePkg) => {
-      this.bookmarkMove(movePkg);
+    queue.subscribe('bookmark.expand-mode.toggle', () => {
+      this.expandModeToogle();
     });
-    bus.subscribe('bookmark.sort-ascend', () => {
-      this.bookmarkSort(numSortAscend);
+    queue.subscribe('bookmark.folder.add', async (folderName) => {
+      await this.folderAdd(folderName);
     });
-    bus.subscribe('bookmark.sort-descend', () => {
-      this.bookmarkSort(numSortDescend);
+    queue.subscribe('bookmark.folder.delete', async (folderName) => {
+      await this.folderDelete(folderName);
     });
-    bus.subscribe('bookmark.sort-invert', () => {
-      this.bookmarkSortInvert();
-    });
-    bus.subscribe('bookmark.up', (verseIdx) => {
-      this.bookmarkUp(verseIdx);
-    });
-    bus.subscribe('folder.add', (folderName) => {
-      this.folderAdd(folderName);
-    });
-    bus.subscribe('folder.change', (folderName) => {
-      this.folderChange(folderName);
-    });
-    bus.subscribe('folder.delete', (folderName) => {
-      this.folderDelete(folderName);
-    });
-    bus.subscribe('folder.down', (folderName) => {
+    queue.subscribe('bookmark.folder.down', (folderName) => {
       this.folderDown(folderName);
     });
-    bus.subscribe('folder.import', (pkgStr) => {
-      this.folderImport(pkgStr);
+    queue.subscribe('bookmark.folder.rename', async (namePkg) => {
+      await this.folderRename(namePkg);
     });
-    bus.subscribe('folder.rename', (namePkg) => {
-      this.folderRename(namePkg);
-    });
-    bus.subscribe('folder.up', (folderName) => {
+    queue.subscribe('bookmark.folder.up', (folderName) => {
       this.folderUp(folderName);
     });
-    bus.subscribe('move-copy.list.change', (verseIdx) => {
+    queue.subscribe('bookmark.move', async (movePkg) => {
+      await this.move(movePkg);
+    });
+    queue.subscribe('bookmark.move-copy.change', async (verseIdx) => {
+      await this.moveCopyChange(verseIdx);
+    });
+    queue.subscribe('bookmark.pkg.import', (pkgStr) => {
+      this.folderImport(pkgStr);
+    });
+    queue.subscribe('bookmark.restore', async () => {
+      await this.restore();
+    });
+    queue.subscribe('bookmark.sort-ascend', async () => {
+      await this.sort(numSortAscend);
+    });
+    queue.subscribe('bookmark.sort-invert', async () => {
+      await this.sortInvert();
+    });
+    queue.subscribe('bookmark.task.change', (bookmarkTask) => {
+      this.taskChange(bookmarkTask);
+    });
+    queue.subscribe('bookmark.up', async (verseIdx) => {
+      await this.up(verseIdx);
+    });
+
+    queue.subscribe('bookmark-move-copy.list.change', (verseIdx) => {
       this.moveCopyListChange(verseIdx);
     });
   }
 
-  updateFolder() {
-    this.saveFolders();
-    this.saveActiveFolder();
-    bus.publish('folder.update', this.folder);
-    bus.publish('folder.list.update', this.getFolderList());
+  taskChange(bookmarkTask) {
+    this.bookmarkTask = bookmarkTask;
+    this.saveBookmarkTask();
+    queue.publish('bookmark.task.update', this.bookmarkTask);
+  }
+
+  async up(verseIdx) {
+    let bookmarks = this.activeFolder.bookmarks;
+    let index = bookmarks.indexOf(verseIdx);
+    if (index !== 0 && index !== -1) {
+      this.reorderBookmarks(index, index - 1);
+      this.updateFolders();
+      await this.updateActiveFolder();
+    }
+  }
+
+  async updateActiveFolder() {
+    this.activeFolder = this.getFolder(this.activeFolderName);
+    this.activeFolder.verseObjs = await tomeDb.verses.bulkGet(
+      this.activeFolder.bookmarks);
+    queue.publish('bookmark.active-folder.update', this.activeFolder);
+  }
+
+  updateActiveFolderName() {
+    this.saveActiveFolderName();
   }
 
   updateFolderList() {
-    this.saveFolders();
-    bus.publish('folder.list.update', this.getFolderList());
+    queue.publish('bookmark.folder-list.update', this.getFolderList());
   }
 
-  validateFolders(folders) {
-    let status = 'OK';
-    let maxIdx = tome.verses.length - 1;
-    folders.some((folder) => {
-      if (
-        !folder.name ||
-        typeof folder.name !== 'string' ||
-        !folder.bookmarks ||
-        !Array.isArray(folder.bookmarks)
-      ) {
-        status = 'Invalid folder structure';
-        return true;
-      }
-      let bookmarkError = folder.bookmarks.some((bookmark) => {
-        if (
-          !Number.isInteger(bookmark) ||
-          bookmark < 0 ||
-          bookmark > maxIdx
-        ) {
-          status = 'Invalid verse';
-          return true;
-        }
-        return false;
-      });
-      return bookmarkError;
-    });
-    return status;
+  updateFolders() {
+    this.saveFolders();
+    queue.publish('bookmark.folders.update', this.folders);
   }
 
   validatePkg(bookmarkPkg) {
@@ -386,12 +521,10 @@ class BookmarkModel {
       !bookmarkPkg.folders ||
       !Array.isArray(bookmarkPkg.folders)
     ) {
-      status = 'Invalid package structure';
-      return status;
+      status = `${appText.invalidPackageStructure}`;
     }
-    if (bookmarkPkg.tome !== tome.name) {
-      status = 'Tome mismatch';
-      return status;
+    if (bookmarkPkg.tome !== tomeName) {
+      status = `${appText.tomeMismatch}`;
     }
     return status;
   }

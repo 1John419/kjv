@@ -1,101 +1,106 @@
-let appPrefix = 'kjv';
+'use strict';
 
 let appCaches = [
   {
-    name: 'kjv-core-20190709.03',
+    name: 'core-20221111.01',
     urls: [
-      './',
-      './index.html',
-      './manifest.json',
-      './sw.js',
-      './bundle.js',
-      './icons.svg',
-      './css/kjv.css'
+      '/',
+      '/bundle.js',
+      '/favicon.png',
+      '/help/about.html',
+      '/icons.svg',
+      '/index.html',
+      '/js/load.js',
+      '/manifest.json',
+      '/robots.txt',
     ]
   },
   {
-    name: 'kjv-font-20190709.01',
+    name: 'css-20221111.01',
     urls: [
-      './css/font.css',
-      './font/lato-v15-latin-regular.woff2',
-      './font/merriweather-v20-latin-regular.woff2',
-      './font/open-sans-v16-latin-regular.woff2',
-      './font/roboto-slab-v8-latin-regular.woff2',
-      './font/roboto-v19-latin-regular.woff2',
-      './font/slabo-27px-v5-latin-regular.woff2'
+      '/css/pb.css',
+      '/css/font.css',
     ]
   },
   {
-    name: 'kjv-icon-20190709.01',
+    name: 'font-20221111.01',
     urls: [
-      './png/icon-32.png',
-      './png/icon-192.png',
-      './png/icon-512.png',
-      './png/touch-icon-152.png',
-      './png/touch-icon-167.png',
-      './png/touch-icon-180.png'
+      '/font/dancing-script-v24-latin-regular.woff2',
+      '/font/inconsolata-v31-latin-regular.woff2',
+      '/font/merriweather-v30-latin-regular.woff2',
+      '/font/noto-serif-hebrew-v20-latin-regular.woff2',
+      '/font/open-sans-v34-latin-regular.woff2',
+      '/font/roboto-mono-v22-latin-regular.woff2',
+      '/font/roboto-slab-v24-latin-regular.woff2',
+      '/font/roboto-v30-latin-regular.woff2',
+      '/font/shadows-into-light-v15-latin-regular.woff2',
     ]
   },
   {
-    name: 'kjv-help-20190709.02',
+    name: 'help-20221111.01',
     urls: [
-      './help/about.html',
-      './help/book-chapter.html',
-      './help/bookmark.html',
-      './help/help.html',
-      './help/overview.html',
-      './help/read.html',
-      './help/search.html',
-      './help/setting.html',
-      './help/thats-my-king.html'
+      '/help/bookmark.html',
+      '/help/help.html',
+      '/help/navigator.html',
+      '/help/overview.html',
+      '/help/read.html',
+      '/help/search.html',
+      '/help/setting.html',
+      '/help/thats-my-king.html',
+    ]
+  },
+  {
+    name: 'json-20221111.01',
+    urls: [
+      '/json/kjv.json',
+    ]
+  },
+  {
+    name: 'png-20221111.01',
+    urls: [
+      '/favicon.png',
+      '/png/icon-192.png',
+      '/png/icon-512.png',
+      '/png/maskable-icon-192.png',
+      '/png/maskable-icon-512.png',
     ]
   }
 ];
 
 let cacheNames = appCaches.map((cache) => cache.name);
 
-self.addEventListener('install', function(event) {
-  event.waitUntil(caches.keys().then(function(keys) {
-    let appKeys = keys.filter(key => key.startsWith(appPrefix));
-    return Promise.all(appCaches.map(function(appCache) {
-      if (appKeys.indexOf(appCache.name) === -1) {
-        return caches.open(appCache.name).then(function(cache) {
-          console.log(`Caching: ${appCache.name}`);
-          return cache.addAll(appCache.urls);
-        });
+self.addEventListener('install', (event) => {
+    event.waitUntil(caches.keys().then((keys) =>
+      Promise.all(appCaches.map(async (appCache) => {
+      if (keys.indexOf(appCache.name) === -1) {
+        const cache = await caches.open(appCache.name);
+        console.log(`Caching: ${appCache.name}`);
+        return await cache.addAll(appCache.urls);
       } else {
         console.log(`Found: ${appCache.name}`);
         return Promise.resolve(true);
       }
-    }));
-  }));
-  self.skipWaiting();
-});
+    }))));
+    self.skipWaiting();
+  });
 
-self.addEventListener('activate', function(event) {
-  event.waitUntil(
-    caches.keys().then(function(keys) {
-      let appKeys = keys.filter(key => key.startsWith(appPrefix));
-      return Promise.all(appKeys.map(function(key) {
+self.addEventListener('activate', (event) => {
+    event.waitUntil(
+      caches.keys().then((keys) => Promise.all(keys.map((key) => {
         if (cacheNames.indexOf(key) === -1) {
           console.log(`Deleting: ${key}`);
           return caches.delete(key);
         }
-      }));
-    })
-  );
-  self.clients.claim();
-});
+      })))
+    );
+    self.clients.claim();
+  });
 
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.match(event.request).then(function(response) {
-      return response ||
-        fetch(event.request).then(function(response) {
-          return response;
-        });
-    }).catch(function(error) {
-      console.log('Fetch failed:', error);
-    })
-  );
-});
+self.addEventListener('fetch', (event) => {
+    event.respondWith(
+      caches.match(event.request).then((response) => response ||
+        fetch(event.request).then((response) => response)).catch((error) => {
+          console.log('Fetch failed:', error);
+        })
+    );
+  });

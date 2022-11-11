@@ -1,22 +1,40 @@
 {
-  "name": "1 John 4:19 KJV",
-  "short_name": "KJV",
-  "description": "Offline King James Bible Search",
-  "background_color": "white",
+  "background_color": "transparent",
+  "description": "KJV Bible Search",
   "dir": "ltr",
   "display": "standalone",
-  "lang": "en-us",
-  "orientation": "any",
-  "scope": "./",
-  "start_url": "./",
-  "theme_color": "#3F51B5",
-  "icons": [{
-      "src": "./png/icon-192.png",
-      "sizes": "192x192"
+  "icons": [
+    {
+      "src": "/png/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "./png/icon-512.png",
-      "sizes": "512x512"
+      "src": "/png/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/png/maskable-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/png/maskable-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "id": "/",
+  "lang": "en",
+  "name": "KJV Bible Search",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "PB",
+  "start_url": "/",
+  "theme_color": "transparent"
 }

@@ -1,8 +1,7 @@
 'use strict';
 
-import { bus } from '../EventBus.js';
-
-import { getChapterPkg } from '../util.js';
+import queue from '../CommandQueue.js';
+import { chapterIdxByVerseIdx } from '../data/tomeDb.js';
 
 class BookmarkController {
 
@@ -10,298 +9,303 @@ class BookmarkController {
     this.initialize();
   }
 
-  actionBookmarkBack() {
-    bus.publish('sidebar.change', 'none');
+  activeFolderUpdate() {
+    if (this.folderSelectPending) {
+      this.folderSelectPending = false;
+      queue.publish('bookmark.task.change', 'bookmark-list');
+    }
   }
 
-  actionBookmarkDelete(verseIdx) {
-    bus.publish('bookmark.delete', verseIdx);
+  back() {
+    queue.publish('sidebar.change', 'none');
   }
 
-  actionBookmarkDown(verseIdx) {
-    bus.publish('bookmark.down', verseIdx);
+  chapterIdxUpdate() {
+    if (this.selectVerseIdx) {
+      if (this.panes === 1 && this.sidebar !== 'none') {
+        queue.publish('sidebar.select', 'none');
+      }
+      queue.publish('read.scroll-to-verse', this.selectVerseIdx);
+      this.selectVerseIdx = null;
+    }
   }
 
-  actionBookmarkFolder() {
-    bus.publish('bookmark.hide', null);
-    this.subPage = 'folder';
-    bus.publish('folder.show', null);
+  expandModeToggle() {
+    queue.publish('bookmark.expand-mode.toggle', null);
   }
 
-  actionBookmarkFolderAdd() {
-    bus.publish('bookmark.hide', null);
-    this.subPage = 'folder-add';
-    bus.publish('folder-add.show', null);
+  exportPane() {
+    queue.publish('bookmark.task.change', 'bookmark-export');
   }
 
-  actionBookmarkMoveCopy(verseIdx) {
-    bus.publish('bookmark.hide', null);
-    this.subPage = 'move-copy';
-    bus.publish('move-copy.list.change', verseIdx);
-    bus.publish('move-copy.show', verseIdx);
-    bus.publish('move-copy.scroll-to-top');
+  folderAdded() {
+    queue.publish('bookmark.task.change', 'bookmark-list');
   }
 
-  actionBookmarkSelect(verseIdx) {
-    this.gotoBookmark(verseIdx);
+  folderAddPane() {
+    queue.publish('bookmark.task.change', 'bookmark-folder-add');
   }
 
-  actionBookmarkSortAscend() {
-    bus.publish('bookmark.sort-ascend', null);
+  folderAddSave(name) {
+    queue.publish('bookmark.folder.add', name);
   }
 
-  actionBookmarkSortDescend() {
-    bus.publish('bookmark.sort-descend', null);
+  folderDeleteConfirm(folderName) {
+    queue.publish('bookmark.folder.delete', folderName);
+    queue.publish('bookmark.task.change', 'bookmark-folder');
   }
 
-  actionBookmarkSortInvert() {
-    bus.publish('bookmark.sort-invert', null);
+  folderDeletePane(folderName) {
+    queue.publish('folder.to.delete', folderName);
+    queue.publish('bookmark.task.change', 'bookmark-folder-delete');
   }
 
-  actionBookmarkUp(verseIdx) {
-    bus.publish('bookmark.up', verseIdx);
+  folderDown(folderName) {
+    queue.publish('bookmark.folder.down', folderName);
   }
 
-  actionExportBack() {
-    bus.publish('export.hide', null);
-    this.subPage = 'folder';
-    bus.publish('folder.show', null);
+  folderPane() {
+    queue.publish('bookmark.task.change', 'bookmark-folder');
   }
 
-  actionFolderAddBack() {
-    bus.publish('folder-add.hide', null);
-    this.subPage = null;
-    bus.publish('bookmark.show', null);
+  folderRenamePane(folderName) {
+    queue.publish('folder.to.rename', folderName);
+    queue.publish('bookmark.task.change', 'bookmark-folder-rename');
   }
 
-  actionFolderAddSave(name) {
-    bus.publish('folder.add', name);
-    bus.publish('folder-add.hide', null);
-    this.subPage = null;
-    bus.publish('bookmark.show', null);
-    bus.publish('folder.scroll-to-top', null);
+  folderRenamed() {
+    queue.publish('bookmark.task.change', 'bookmark-folder');
   }
 
-  actionFolderBack() {
-    bus.publish('folder.hide', null);
-    this.subPage = null;
-    bus.publish('bookmark.show', null);
+  folderRenameSave(namePkg) {
+    queue.publish('bookmark.folder.rename', namePkg);
   }
 
-  actionFolderDelete(folderName) {
-    bus.publish('folder.hide');
-    this.subPage = 'folder-delete';
-    bus.publish('folder-delete.show', folderName);
+  folderSelect(folderName) {
+    this.folderSelectPending = true;
+    queue.publish('bookmark.active-folder.change', folderName);
   }
 
-  actionFolderDeleteBack() {
-    bus.publish('folder-delete.hide', null);
-    this.subPage = 'folder';
-    bus.publish('folder.show', null);
-  }
-
-  actionFolderDeleteConfirm(folderName) {
-    bus.publish('folder.delete', folderName);
-    bus.publish('folder-delete.hide', null);
-    this.subPage = 'folder';
-    bus.publish('folder.show', null);
-  }
-
-  actionFolderDown(folderName) {
-    bus.publish('folder.down', folderName);
-  }
-
-  actionFolderExport() {
-    bus.publish('folder.hide', null);
-    this.subPage = 'export';
-    bus.publish('export.show', null);
-  }
-
-  actionFolderImport() {
-    bus.publish('folder.hide', null);
-    this.subPage = 'import';
-    bus.publish('import.show', null);
-  }
-
-  actionFolderRename(folderName) {
-    bus.publish('folder.hide', null);
-    this.subPage = 'folder-rename';
-    bus.publish('folder-rename.show', folderName);
-  }
-
-  actionFolderRenameBack() {
-    bus.publish('folder-rename.hide', null);
-    this.subPage = 'folder';
-    bus.publish('folder.show', null);
-  }
-
-  actionFolderRenameSave(namePkg) {
-    bus.publish('folder.rename', namePkg);
-    bus.publish('folder-rename.hide', null);
-    this.subPage = 'folder';
-    bus.publish('folder.show', null);
-  }
-
-  actionFolderSelect(folderName) {
-    bus.publish('folder.change', folderName);
-    bus.publish('folder.hide', null);
-    this.subPage = null;
-    bus.publish('bookmark.show', null);
-  }
-
-  actionFolderUp(folderName) {
-    bus.publish('folder.up', folderName);
-  }
-
-  actionImportBack() {
-    bus.publish('import.hide', null);
-    this.subPage = 'folder';
-    bus.publish('folder.show', null);
-  }
-
-  actionImportImport(pkgStr) {
-    bus.publish('folder.import', pkgStr);
-  }
-
-  actionMoveCopyBack() {
-    bus.publish('move-copy.hide', null);
-    this.subPage = null;
-    bus.publish('bookmark.show', null);
-  }
-
-  actionMoveCopyCopy(copyPkg) {
-    bus.publish('bookmark.copy', copyPkg);
-  }
-
-  actionMoveCopyMove(movePkg) {
-    bus.publish('bookmark.move', movePkg);
+  folderUp(folderName) {
+    queue.publish('bookmark.folder.up', folderName);
   }
 
   gotoBookmark(verseIdx) {
-    let chapterPkg = getChapterPkg(verseIdx);
-    bus.publish('chapterPkg.change', chapterPkg);
-    if (this.panes === 1) {
-      bus.publish('action.sidebar.select', 'none');
-    }
-    bus.publish('read.scroll-to-verse', verseIdx);
+    this.selectVerseIdx = verseIdx;
+    let chapterIdx = chapterIdxByVerseIdx(verseIdx);
+    queue.publish('chapterIdx.change', chapterIdx);
+  }
+
+  hide() {
+    queue.publish(`${this.bookmarkTask}.hide`, null);
+  }
+
+  importImport(pkgStr) {
+    queue.publish('bookmark.pkg.import', pkgStr);
+  }
+
+  importPane() {
+    queue.publish('bookmark.task.change', 'bookmark-import');
   }
 
   initialize() {
     this.subscribe();
   }
 
+  listDelete(verseIdx) {
+    queue.publish('bookmark.delete', verseIdx);
+  }
+
+  listDown(verseIdx) {
+    queue.publish('bookmark.down', verseIdx);
+  }
+
+  listPane() {
+    queue.publish('bookmark.task.change', 'bookmark-list');
+  }
+
+  listSelect(verseIdx) {
+    this.gotoBookmark(verseIdx);
+  }
+
+  listSortAscend() {
+    queue.publish('bookmark.sort-ascend', null);
+  }
+
+  listSortInvert() {
+    queue.publish('bookmark.sort-invert', null);
+  }
+
+  listUp(verseIdx) {
+    queue.publish('bookmark.up', verseIdx);
+  }
+
+  moveCopyCopy(copyPkg) {
+    queue.publish('bookmark.copy', copyPkg);
+  }
+
+  moveCopyMove(movePkg) {
+    queue.publish('bookmark.move', movePkg);
+  }
+
+  moveCopyPane(verseIdx) {
+    queue.publish('bookmark-move-copy.list.change', verseIdx);
+    queue.publish('bookmark.move-copy.change', verseIdx);
+  }
+
+  moveCopyReady() {
+    queue.publish('bookmark.task.change', 'bookmark-move-copy');
+  }
+
   panesUpdate(panes) {
     this.panes = panes;
   }
 
-  sidebarUpdate() {
-    if (!this.subPage) {
-      return;
-    }
-    bus.publish(`${this.subPage}.hide`, null);
-    this.subPage = null;
+  show() {
+    queue.publish(`${this.bookmarkTask}.show`, null);
   }
 
+  sidebarUpdate(sidebar) {
+    this.sidebar = sidebar;
+  }
+
+
   subscribe() {
-    bus.subscribe('action.bookmark.back', () => {
-      this.actionBookmarkBack();
+    queue.subscribe('bookmark-export', () => {
+      this.exportPane();
     });
-    bus.subscribe('action.bookmark.delete', (verseIdx) => {
-      this.actionBookmarkDelete(verseIdx);
+
+    queue.subscribe('bookmark-folder', () => {
+      this.folderPane();
     });
-    bus.subscribe('action.bookmark.down', (verseIdx) => {
-      this.actionBookmarkDown(verseIdx);
+    queue.subscribe('bookmark-folder.delete', (folderName) => {
+      this.folderDeletePane(folderName);
     });
-    bus.subscribe('action.bookmark.folder', () => {
-      this.actionBookmarkFolder();
+    queue.subscribe('bookmark-folder.down', (folderName) => {
+      this.folderDown(folderName);
     });
-    bus.subscribe('action.bookmark.folder-add', () => {
-      this.actionBookmarkFolderAdd();
+    queue.subscribe('bookmark-folder.select', (folderName) => {
+      this.folderSelect(folderName);
     });
-    bus.subscribe('action.bookmark.move.copy', (verseIdx) => {
-      this.actionBookmarkMoveCopy(verseIdx);
+    queue.subscribe('bookmark-folder.up', (folderName) => {
+      this.folderUp(folderName);
     });
-    bus.subscribe('action.bookmark.select', (verseIdx) => {
-      this.actionBookmarkSelect(verseIdx);
+
+    queue.subscribe('bookmark-folder-add', () => {
+      this.folderAddPane();
     });
-    bus.subscribe('action.bookmark.sort-ascend', () => {
-      this.actionBookmarkSortAscend();
+    queue.subscribe('bookmark-folder-add.save', (name) => {
+      this.folderAddSave(name);
     });
-    bus.subscribe('action.bookmark.sort-descend', () => {
-      this.actionBookmarkSortDescend();
+
+    queue.subscribe('bookmark-folder-delete.confirm', (folderName) => {
+      this.folderDeleteConfirm(folderName);
     });
-    bus.subscribe('action.bookmark.sort-invert', () => {
-      this.actionBookmarkSortInvert();
+
+    queue.subscribe('bookmark-folder-rename', (folderName) => {
+      this.folderRenamePane(folderName);
     });
-    bus.subscribe('action.bookmark.up', (verseIdx) => {
-      this.actionBookmarkUp(verseIdx);
+    queue.subscribe('bookmark-folder-rename.save', (namePkg) => {
+      this.folderRenameSave(namePkg);
     });
-    bus.subscribe('action.export.back', () => {
-      this.actionExportBack();
+
+    queue.subscribe('bookmark-import', () => {
+      this.importPane();
     });
-    bus.subscribe('action.folder-add.back', () => {
-      this.actionFolderAddBack();
+    queue.subscribe('bookmark-import.import', (pkgStr) => {
+      this.importImport(pkgStr);
     });
-    bus.subscribe('action.folder-add.save', (name) => {
-      this.actionFolderAddSave(name);
+
+    queue.subscribe('bookmark-list', () => {
+      this.listPane();
     });
-    bus.subscribe('action.folder.back', () => {
-      this.actionFolderBack();
+    queue.subscribe('bookmark-list.delete', (verseIdx) => {
+      this.listDelete(verseIdx);
     });
-    bus.subscribe('action.folder.delete', (folderName) => {
-      this.actionFolderDelete(folderName);
+    queue.subscribe('bookmark-list.down', (verseIdx) => {
+      this.listDown(verseIdx);
     });
-    bus.subscribe('action.folder-delete.back', () => {
-      this.actionFolderDeleteBack();
+    queue.subscribe('bookmark-list.expand-mode.click', () => {
+      this.expandModeToggle();
     });
-    bus.subscribe('action.folder-delete.confirm', (folderName) => {
-      this.actionFolderDeleteConfirm(folderName);
+    queue.subscribe('bookmark-list.move-copy', (verseIdx) => {
+      this.moveCopyPane(verseIdx);
     });
-    bus.subscribe('action.folder.down', (folderName) => {
-      this.actionFolderDown(folderName);
+    queue.subscribe('bookmark-list.select', (verseIdx) => {
+      this.listSelect(verseIdx);
     });
-    bus.subscribe('action.folder.export', () => {
-      this.actionFolderExport();
+    queue.subscribe('bookmark-list.sort-ascend', () => {
+      this.listSortAscend();
     });
-    bus.subscribe('action.folder.import', () => {
-      this.actionFolderImport();
+    queue.subscribe('bookmark-list.sort-invert', () => {
+      this.listSortInvert();
     });
-    bus.subscribe('action.folder.rename', (folderName) => {
-      this.actionFolderRename(folderName);
+    queue.subscribe('bookmark-list.up', (verseIdx) => {
+      this.listUp(verseIdx);
     });
-    bus.subscribe('action.folder-rename.back', () => {
-      this.actionFolderRenameBack();
+
+    queue.subscribe('bookmark-move-copy.copy', (copyPkg) => {
+      this.moveCopyCopy(copyPkg);
     });
-    bus.subscribe('action.folder-rename.save', (namePkg) => {
-      this.actionFolderRenameSave(namePkg);
+    queue.subscribe('bookmark-move-copy.move', (movePkg) => {
+      this.moveCopyMove(movePkg);
     });
-    bus.subscribe('action.folder.select', (folderName) => {
-      this.actionFolderSelect(folderName);
+    queue.subscribe('bookmark-move-copy.ready', () => {
+      this.moveCopyReady();
     });
-    bus.subscribe('action.folder.up', (folderName) => {
-      this.actionFolderUp(folderName);
+
+    queue.subscribe('bookmark.active-folder.update', () => {
+      this.activeFolderUpdate();
     });
-    bus.subscribe('action.import.back', () => {
-      this.actionImportBack();
+    queue.subscribe('bookmark.back', () => {
+      this.back();
     });
-    bus.subscribe('action.import.import',
-      (pkgStr) => { this.actionImportImport(pkgStr); }
-    );
-    bus.subscribe('move-copy.list.back', () => {
-      this.actionMoveCopyBack();
+    queue.subscribe('bookmark.copy', () => {
+      this.listPane();
     });
-    bus.subscribe('action.move-copy.copy', (copyPkg) => {
-      this.actionMoveCopyCopy(copyPkg);
+    queue.subscribe('bookmark.folder.added', () => {
+      this.folderAdded();
     });
-    bus.subscribe('action.move-copy.move', (movePkg) => {
-      this.actionMoveCopyMove(movePkg);
+    queue.subscribe('bookmark.folder.renamed', () => {
+      this.folderRenamed();
     });
-    bus.subscribe('panes.update', (panes) => {
+    queue.subscribe('bookmark.hide', () => {
+      this.hide();
+    });
+    queue.subscribe('bookmark.move', () => {
+      this.listPane();
+    });
+    queue.subscribe('bookmark.show', () => {
+      this.show();
+    });
+    queue.subscribe('bookmark.task.update', (bookmarkTask) => {
+      this.taskUpdate(bookmarkTask);
+    });
+
+    queue.subscribe('chapterIdx.update', () => {
+      this.chapterIdxUpdate();
+    });
+
+    queue.subscribe('panes.update', (panes) => {
       this.panesUpdate(panes);
     });
-    bus.subscribe('sidebar.update', () => {
-      this.sidebarUpdate();
+
+    queue.subscribe('sidebar.update', (sidebar) => {
+      this.sidebarUpdate(sidebar);
     });
+
+  }
+
+  taskUpdate(bookmarkTask) {
+    if (this.sidebar === 'bookmark') {
+      if (this.bookmarkTask !== bookmarkTask) {
+        queue.publish(`${this.bookmarkTask}.hide`, null);
+        this.bookmarkTask = bookmarkTask;
+        queue.publish(`${this.bookmarkTask}.show`, null);
+      }
+    } else {
+      this.bookmarkTask = bookmarkTask;
+    }
   }
 
 }

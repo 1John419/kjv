@@ -1,51 +1,55 @@
 'use strict';
 
-import { bus } from '../EventBus.js';
-
-import { tome } from '../Tome/tome.js';
-
+import queue from '../CommandQueue.js';
 import {
-  idxFirstVerse,
-  idxLastVerse,
-  idxVerseNum
-} from '../tomeIdx.js';
-
-import {
-  centerScrollElement,
-  range,
-  removeAllChildren
-} from '../util.js';
-
-import {
+  templateAcrostic,
   templateElement,
   templateToolbarLower,
   templatePage,
-  templatePageScroll,
+  templateScroll,
   templateToolbarUpper
 } from '../template.js';
+import {
+  centerScrollElement,
+  removeAllChildren,
+  sideScrollElement
+} from '../util.js';
+import { appText } from '../data/language.js';
+import {
+  tomeChapters
+} from '../data/tomeDb.js';
+import {
+  chapterName,
+  verseNum,
+  verseText
+} from '../data/tomeIdx.js';
 
 const lowerToolSet = [
-  { type: 'btn', icon: 'book', label: 'Book' },
-  { type: 'btn', icon: 'chapter', label: 'Chapter' },
-  { type: 'btn', icon: 'bookmark', label: 'Bookmark' },
-  { type: 'btn', icon: 'search', label: 'Search' },
-  { type: 'btn', icon: 'setting', label: 'Setting' },
-  { type: 'btn', icon: 'help', label: 'Help' },
-  { type: 'btn', icon: 'column-1', label: 'Single Column' },
-  { type: 'btn', icon: 'column-2', label: 'Double Column' },
-  { type: 'btn', icon: 'column-3', label: 'Triple Column' }
+  { type: 'btn', icon: 'navigator', ariaLabel: `${appText.navigator}` },
+  { type: 'btn', icon: 'bookmark', ariaLabel: `${appText.bookmark}` },
+  { type: 'btn', icon: 'search', ariaLabel: `${appText.search}` },
+  { type: 'btn', icon: 'setting', ariaLabel: `${appText.setting}` },
+  { type: 'btn', icon: 'help', ariaLabel: `${appText.help}` },
+  { type: 'btn', icon: 'column-mode', ariaLabel: `${appText.columnMode}` },
 ];
 
 const upperToolSet = [
-  { type: 'btn', icon: 'prev', label: 'Previous Chapter' },
-  { type: 'banner', modifier: 'read', text: null },
-  { type: 'btn', icon: 'next', label: 'Next Chapter' }
+  { type: 'btn', icon: 'prev', ariaLabel: `${appText.previousChapter}` },
+  { type: 'banner', cssModifier: 'read', text: null },
+  { type: 'btn', icon: 'next', ariaLabel: `${appText.nextChapter}` }
 ];
+
+const matthewChapterIdx = 929;
 
 class ReadView {
 
   constructor() {
     this.initialize();
+  }
+
+  activeFolderUpdate(activeFolder) {
+    this.activeFolder = activeFolder;
+    this.refreshVerseBookmarks();
   }
 
   addListeners() {
@@ -58,48 +62,26 @@ class ReadView {
     this.toolbarUpper.addEventListener('click', (event) => {
       this.toolbarUpperClick(event);
     });
-    window.addEventListener('resize', (event) => {
-      this.windowResize(event);
-    });
-  }
-
-  bookHide() {
-    this.btnBook.classList.remove('btn-icon--active');
   }
 
   bookmarkHide() {
-    if (this.sidebar === 'bookmark') {
-      return;
+    if (this.sidebar !== 'bookmark') {
+      this.btnBookmark.classList.remove('btn-icon--active');
     }
-    this.btnBookmark.classList.remove('btn-icon--active');
   }
 
   bookmarkShow() {
     this.btnBookmark.classList.add('btn-icon--active');
   }
 
-  bookShow() {
-    this.btnBook.classList.add('btn-icon--active');
-  }
-
-  buildAcrosticSpan(verseIdx) {
-    let acrostics = tome.acrostics;
-    let acrostic = acrostics[verseIdx];
-    if (!acrostic) {
-      return undefined;
-    }
-    let acrosticSpan = templateElement(
-      'span', 'verse__acrostic', null, null, acrostic + ' ');
-    return acrosticSpan;
-  }
-
   buildPage() {
     this.page = templatePage('read');
+    this.page.classList.remove('page--hide');
 
     this.toolbarUpper = templateToolbarUpper(upperToolSet);
     this.page.appendChild(this.toolbarUpper);
 
-    this.scroll = templatePageScroll('read');
+    this.scroll = templateScroll('read');
     this.list = templateElement('div', 'list', 'read', null, null);
     this.scroll.appendChild(this.list);
     this.page.appendChild(this.scroll);
@@ -111,30 +93,30 @@ class ReadView {
     container.appendChild(this.page);
   }
 
-  buildVerse(verseIdx) {
+  buildVerse(verseObj) {
     let verse = templateElement('div', 'verse', null, null, null);
-    verse.dataset.verseIdx = verseIdx;
-    let verseNum = this.buildVerseNum(verseIdx);
+    verse.dataset.verseIdx = verseObj.k;
+    let verseNum = this.buildVerseNum(verseObj);
     verse.appendChild(verseNum);
-    let acrostic = this.buildAcrosticSpan(verseIdx);
+    let acrostic = templateAcrostic(verseObj);
     if (acrostic) {
       verse.appendChild(acrostic);
     }
-    let verseText = this.buildVerseText(verseIdx);
-    verse.appendChild(verseText);
+    let text = this.buildVerseText(verseObj);
+    verse.appendChild(text);
     return verse;
   }
 
-  buildVerseNum(verseIdx) {
-    let verseNum = templateElement('span', 'verse__num', null, null,
-      tome.refs[verseIdx][idxVerseNum] + ' ');
-    return verseNum;
+  buildVerseNum(verseObj) {
+    let num = templateElement('span', 'verse-num', null, null,
+      verseObj.v[verseNum] + ' ');
+    return num;
   }
 
-  buildVerseText(verseIdx) {
-    let verseText = templateElement('span', 'verse__text', null, null,
-      tome.verses[verseIdx]);
-    return verseText;
+  buildVerseText(verseObj) {
+    let text = templateElement('span', 'verse-text', null, null,
+      verseObj.v[verseText]);
+    return text;
   }
 
   changeTheme() {
@@ -144,29 +126,18 @@ class ReadView {
     this.body.classList.add(this.theme.themeClass);
   }
 
-  chapterHide() {
-    this.btnChapter.classList.remove('btn-icon--active');
-  }
-
-  chapterPkgUpdate(chapterPkg) {
-    this.chapterPkg = chapterPkg;
+  chapterIdxUpdate(chapterIdx) {
+    this.chapterIdx = chapterIdx;
+    this.getVerseText
     this.updateBanner();
     this.updateVerses();
-  }
-
-  chapterShow() {
-    this.btnChapter.classList.add('btn-icon--active');
-  }
-
-  columnUpdate(column) {
-    this.column = column;
-    this.updateColumn();
-    this.updateColumnBtn();
-  }
-
-  folderUpdate(folder) {
-    this.folder = folder;
     this.refreshVerseBookmarks();
+  }
+
+  columnModeUpdate(columnMode) {
+    this.columnMode = columnMode;
+    this.updateColumnModeBtn();
+    this.updateColumnMode();
   }
 
   fontSizeUpdate(fontSize) {
@@ -188,30 +159,30 @@ class ReadView {
     this.banner = this.toolbarUpper.querySelector('.banner--read');
     this.btnNext = this.toolbarUpper.querySelector('.btn-icon--next');
 
-    this.btnBook = this.toolbarLower.querySelector('.btn-icon--book');
-    this.btnChapter = this.toolbarLower.querySelector('.btn-icon--chapter');
+    this.btnNavigator = this.toolbarLower.querySelector('.btn-icon--navigator');
     this.btnBookmark = this.toolbarLower.querySelector('.btn-icon--bookmark');
     this.btnSearch = this.toolbarLower.querySelector('.btn-icon--search');
     this.btnSetting = this.toolbarLower.querySelector('.btn-icon--setting');
     this.btnHelp = this.toolbarLower.querySelector('.btn-icon--help');
-    this.btnColumnOne = this.toolbarLower.querySelector('.btn-icon--column-1');
-    this.btnColumnTwo = this.toolbarLower.querySelector('.btn-icon--column-2');
-    this.btnColumnThree = this.toolbarLower.querySelector('.btn-icon--column-3');
+    this.btnColumnMode = this.toolbarLower.querySelector('.btn-icon--column-mode');
+  }
 
-    this.columnBtns = [
-      this.btnColumnOne, this.btnColumnTwo, this.btnColumnThree
-    ];
+  getVerseText(verseObj) {
+    return verseObj.v[verseText];
   }
 
   helpHide() {
-    if (this.sidebar === 'help') {
-      return;
+    if (this.sidebar !== 'help') {
+      this.btnHelp.classList.remove('btn-icon--active');
     }
-    this.btnHelp.classList.remove('btn-icon--active');
   }
 
   helpShow() {
     this.btnHelp.classList.add('btn-icon--active');
+  }
+
+  hide() {
+    this.page.classList.add('page--hide');
   }
 
   initialize() {
@@ -225,39 +196,33 @@ class ReadView {
 
   listClick(event) {
     event.preventDefault();
-    if (document.getSelection().toString()) {
-      return;
+    if (!document.getSelection().toString()) {
+      let verse = event.target.closest('div.verse');
+      if (verse) {
+        this.verseClick(verse);
+      }
     }
-    let verse = event.target.closest('div.verse');
-    if (!verse) {
-      return;
-    }
-    this.verseClick(verse);
   }
 
-  panesUpdate(panes) {
-    switch (panes) {
-      case 1:
-      case 2:
-        this.btnColumnOne.classList.add('btn-icon--hide');
-        this.btnColumnTwo.classList.add('btn-icon--hide');
-        this.btnColumnThree.classList.add('btn-icon--hide');
-        break;
-      case 3:
-        this.btnColumnOne.classList.remove('btn-icon--hide');
-        this.btnColumnTwo.classList.remove('btn-icon--hide');
-        this.btnColumnThree.classList.add('btn-icon--hide');
-        break;
-      default:
-        this.btnColumnOne.classList.remove('btn-icon--hide');
-        this.btnColumnTwo.classList.remove('btn-icon--hide');
-        this.btnColumnThree.classList.remove('btn-icon--hide');
-    }
+  navigatorHide() {
+    this.btnNavigator.classList.remove('btn-icon--active');
+  }
+
+  navigatorShow() {
+    this.btnNavigator.classList.add('btn-icon--active');
+  }
+
+  navigatorMapsUpdate(mapObjs) {
+    this.mapObjs = mapObjs;
+  }
+
+  navigatorVersesUpdate(verseObjs) {
+    this.verseObjs = verseObjs;
   }
 
   refreshBookmarks(element) {
     let verseIdx = parseInt(element.dataset.verseIdx);
-    if (this.folder.bookmarks.indexOf(verseIdx) === -1) {
+    if (this.activeFolder.bookmarks.indexOf(verseIdx) === -1) {
       element.classList.remove('verse--bookmark');
     } else {
       element.classList.add('verse--bookmark');
@@ -271,32 +236,27 @@ class ReadView {
     }
   }
 
-  readHide() {
-    this.page.classList.add('page--hide');
-  }
-
-  readScrollToTop() {
+  scrollToTop() {
     this.scroll.scrollTop = 0;
+    this.scroll.scrollLeft = 0;
   }
 
-  readScrollToVerse(verseIdx) {
+  scrollToVerse(verseIdx) {
     let element = this.list.querySelector(
-      `[data-verse-idx="${verseIdx}"]`
-    );
+      `[data-verse-idx="${verseIdx}"]`);
     if (element) {
-      centerScrollElement(this.scroll, element);
+      if (this.columnMode) {
+        sideScrollElement(this.scroll, element);
+      } else {
+        centerScrollElement(this.scroll, element);
+      }
     }
-  }
-
-  readShow() {
-    this.page.classList.remove('page--hide');
   }
 
   searchHide() {
-    if (this.sidebar === 'search') {
-      return;
+    if (this.sidebar !== 'search') {
+      this.btnSearch.classList.remove('btn-icon--active');
     }
-    this.btnSearch.classList.remove('btn-icon--active');
   }
 
   searchShow() {
@@ -311,81 +271,92 @@ class ReadView {
     this.btnSetting.classList.add('btn-icon--active');
   }
 
+  show() {
+    this.page.classList.remove('page--hide');
+  }
+
   sidebarUpdate(sidebar) {
     this.sidebar = sidebar;
   }
 
   subscribe() {
-    bus.subscribe('book.hide', () => {
-      this.bookHide();
+    queue.subscribe('bookmark.active-folder.update', (activeFolder) => {
+      this.activeFolderUpdate(activeFolder);
     });
-    bus.subscribe('book.show', () => {
-      this.bookShow();
-    });
-    bus.subscribe('bookmark.hide', () => {
+    queue.subscribe('bookmark.hide', () => {
       this.bookmarkHide();
     });
-    bus.subscribe('bookmark.show', () => {
+    queue.subscribe('bookmark.show', () => {
       this.bookmarkShow();
     });
-    bus.subscribe('chapter.hide', () => {
-      this.chapterHide();
+
+    queue.subscribe('chapterIdx.update', (chapterIdx) => {
+      this.chapterIdxUpdate(chapterIdx);
     });
-    bus.subscribe('chapter.show', () => {
-      this.chapterShow();
-    });
-    bus.subscribe('chapterPkg.update', (chapterPkg) => {
-      this.chapterPkgUpdate(chapterPkg);
-    });
-    bus.subscribe('column.update', (column) => {
-      this.columnUpdate(column);
-    });
-    bus.subscribe('folder.update', (folder) => {
-      this.folderUpdate(folder);
-    });
-    bus.subscribe('font.update', (font) => {
+
+    queue.subscribe('font.update', (font) => {
       this.fontUpdate(font);
     });
-    bus.subscribe('font-size.update', (fontSize) => {
+
+    queue.subscribe('font-size.update', (fontSize) => {
       this.fontSizeUpdate(fontSize);
     });
-    bus.subscribe('help.hide', () => {
+
+    queue.subscribe('help.hide', () => {
       this.helpHide();
     });
-    bus.subscribe('help.show', () => {
+    queue.subscribe('help.show', () => {
       this.helpShow();
     });
-    bus.subscribe('panes.update', (panes) => {
-      this.panesUpdate(panes);
+
+    queue.subscribe('navigator.hide', () => {
+      this.navigatorHide();
     });
-    bus.subscribe('read.hide', () => {
-      this.readHide();
+    queue.subscribe('navigator.show', () => {
+      this.navigatorShow();
     });
-    bus.subscribe('read.scroll-to-top', () => {
-      this.readScrollToTop();
+    queue.subscribe('navigator.maps.update', (mapObjs) => {
+      this.navigatorMapsUpdate(mapObjs);
     });
-    bus.subscribe('read.scroll-to-verse', (verseIdx) => {
-      this.readScrollToVerse(verseIdx);
+    queue.subscribe('navigator.verses.update', (verseObjs) => {
+      this.navigatorVersesUpdate(verseObjs);
     });
-    bus.subscribe('read.show', () => {
-      this.readShow();
+
+    queue.subscribe('read.column-mode.update', (columnMode) => {
+      this.columnModeUpdate(columnMode);
     });
-    bus.subscribe('search.hide', () => {
+    queue.subscribe('read.hide', () => {
+      this.hide();
+    });
+    queue.subscribe('read.scroll-to-top', () => {
+      this.scrollToTop();
+    });
+    queue.subscribe('read.scroll-to-verse', (verseIdx) => {
+      this.scrollToVerse(verseIdx);
+    });
+    queue.subscribe('read.show', () => {
+      this.show();
+    });
+
+    queue.subscribe('search.hide', () => {
       this.searchHide();
     });
-    bus.subscribe('search.show', () => {
+    queue.subscribe('search.show', () => {
       this.searchShow();
     });
-    bus.subscribe('setting.hide', () => {
+
+    queue.subscribe('setting.hide', () => {
       this.settingHide();
     });
-    bus.subscribe('setting.show', () => {
+    queue.subscribe('setting.show', () => {
       this.settingShow();
     });
-    bus.subscribe('sidebar.update', (sidebar) => {
+
+    queue.subscribe('sidebar.update', (sidebar) => {
       this.sidebarUpdate(sidebar);
     });
-    bus.subscribe('theme.update', (theme) => {
+
+    queue.subscribe('theme.update', (theme) => {
       this.themeUpdate(theme);
     });
   }
@@ -393,50 +364,36 @@ class ReadView {
   toolbarLowerClick(event) {
     event.preventDefault();
     let target = event.target.closest('button');
-    if (target === null ||
-      target.classList.contains('btn-icon--active')
-    ) {
-      return;
-    }
-    switch (target) {
-      case this.btnBook:
-        bus.publish('action.sidebar.select', 'book');
-        break;
-      case this.btnBookmark:
-        bus.publish('action.sidebar.select', 'bookmark');
-        break;
-      case this.btnChapter:
-        bus.publish('action.sidebar.select', 'chapter');
-        break;
-      case this.btnColumnOne:
-        bus.publish('action.column.select', 1);
-        break;
-      case this.btnColumnTwo:
-        bus.publish('action.column.select', 2);
-        break;
-      case this.btnColumnThree:
-        bus.publish('action.column.select', 3);
-        break;
-      case this.btnHelp:
-        bus.publish('action.sidebar.select', 'help');
-        break;
-      case this.btnSearch:
-        bus.publish('action.sidebar.select', 'search');
-        break;
-      case this.btnSetting:
-        bus.publish('action.sidebar.select', 'setting');
+    if (target) {
+      if (target === this.btnColumnMode ||
+        !target.classList.contains('btn-icon--active')
+      ) {
+        if (target === this.btnNavigator) {
+          queue.publish('sidebar.select', 'navigator');
+        } else if (target === this.btnBookmark) {
+          queue.publish('sidebar.select', 'bookmark');
+        } else if (target === this.btnSearch) {
+          queue.publish('sidebar.select', 'search');
+        } else if (target === this.btnSetting) {
+          queue.publish('sidebar.select', 'setting');
+        } else if (target === this.btnHelp) {
+          queue.publish('sidebar.select', 'help');
+        } else if (target === this.btnColumnMode) {
+          queue.publish('read.column-mode.click', null);
+        }
+      }
     }
   }
 
   toolbarUpperClick(event) {
     event.preventDefault();
     let target = event.target.closest('button');
-    switch (target) {
-      case this.btnPrev:
-        bus.publish('action.read.prev-chapter', 1);
-        break;
-      case this.btnNext:
-        bus.publish('action.read.next-chapter', 2);
+    if (target) {
+      if (target === this.btnPrev) {
+        queue.publish('read.prev.chapter', 1);
+      } else if (target === this.btnNext) {
+        queue.publish('read.next.chapter', 2);
+      }
     }
   }
 
@@ -447,27 +404,23 @@ class ReadView {
   }
 
   updateBanner() {
-    this.banner.textContent = this.chapterPkg.chapterName;
+    this.banner.textContent = tomeChapters[this.chapterIdx][chapterName];
   }
 
-  updateColumn() {
-    this.list.classList.remove('column-2', 'column-3');
-    if (this.column === 2) {
-      this.list.classList.add('column-2');
-      return;
-    }
-    if (this.column === 3) {
-      this.list.classList.add('column-3');
-      return;
+  updateColumnMode() {
+    if (this.columnMode) {
+      this.list.classList.add('list--read-column');
+    } else {
+      this.list.classList.remove('list--read-column');
     }
   }
 
-  updateColumnBtn() {
-    if (this.activeColumnBtn) {
-      this.activeColumnBtn.classList.remove('btn-icon--active');
+  updateColumnModeBtn() {
+    if (this.columnMode) {
+      this.btnColumnMode.classList.add('btn-icon--active');
+    } else {
+      this.btnColumnMode.classList.remove('btn-icon--active');
     }
-    this.activeColumnBtn = this.columnBtns[this.column - 1];
-    this.activeColumnBtn.classList.add('btn-icon--active');
   }
 
   updateFont() {
@@ -487,27 +440,20 @@ class ReadView {
   updateVerses() {
     removeAllChildren(this.list);
     let fragment = document.createDocumentFragment();
-    let chapter = tome.chapters[this.chapterPkg.chapterIdx];
-    let indices = range(chapter[idxFirstVerse], chapter[idxLastVerse] + 1);
-    for (let idx of indices) {
-      let verse = this.buildVerse(idx);
+    for (let verseObj of this.verseObjs) {
+      let verse = this.buildVerse(verseObj);
       fragment.appendChild(verse);
     }
     this.list.appendChild(fragment);
-    this.refreshVerseBookmarks();
   }
 
   verseClick(verse) {
     let verseIdx = parseInt(verse.dataset.verseIdx);
     if (verse.classList.contains('verse--bookmark')) {
-      bus.publish('action.read.bookmark-delete', verseIdx);
+      queue.publish('read.bookmark.delete', verseIdx);
     } else {
-      bus.publish('action.read.bookmark-add', verseIdx);
+      queue.publish('read.bookmark.add', verseIdx);
     }
-  }
-
-  windowResize() {
-    bus.publish('window.resize', null);
   }
 
 }

@@ -1,6 +1,6 @@
 'use strict';
 
-import { bus } from '../EventBus.js';
+import queue from '../CommandQueue.js';
 
 class SettingController {
 
@@ -8,33 +8,22 @@ class SettingController {
     this.initialize();
   }
 
-  actionSettingBack() {
-    bus.publish('sidebar.change', 'none');
+  back() {
+    queue.publish('sidebar.change', 'none');
   }
 
-  actionSettingFontNext() {
+  fontNext() {
     this.getNextFontIdx();
-    bus.publish('font.change', this.fonts[this.fontIdx]);
+    queue.publish('font.change', this.fonts[this.fontIdx]);
   }
 
-  actionSettingFontPrev() {
+  fontPrev() {
     this.getPrevFontIdx();
-    bus.publish('font.change', this.fonts[this.fontIdx]);
+    queue.publish('font.change', this.fonts[this.fontIdx]);
   }
 
-  actionSettingFontSize(fontSize) {
-    this.fontSize = fontSize;
-    bus.publish('font-size.change', this.fontSize);
-  }
-
-  actionSettingThemeNext() {
-    this.getNextThemeIdx();
-    bus.publish('theme.change', this.themes[this.themeIdx]);
-  }
-
-  actionSettingThemePrev() {
-    this.getPrevThemeIdx();
-    bus.publish('theme.change', this.themes[this.themeIdx]);
+  fontSize(fontSize) {
+    queue.publish('font-size.change', fontSize);
   }
 
   fontUpdate(font) {
@@ -59,12 +48,42 @@ class SettingController {
     this.fontIdx = this.fontIdx === 0 ? this.maxFontIdx : this.fontIdx -= 1;
   }
 
+  getDarkThemeIdx() {
+    if (this.themes[this.themeIdx] === 'dark') {
+      return this.themeIdx;
+    }
+    this.themeIdx = this.themes.findIndex((theme) => {
+      return theme.themeType === 'dark' &&
+        theme.themeName === this.theme.themeName;
+    });
+  }
+
+  getLightThemeIdx() {
+    if (this.themes[this.themeIdx] === 'light') {
+      return this.themeIdx;
+    }
+    this.themeIdx = this.themes.findIndex((theme) => {
+      return theme.themeType === 'light' &&
+        theme.themeName === this.theme.themeName;
+    });
+  }
+
   getNextThemeIdx() {
-    this.themeIdx = this.themeIdx === this.maxThemeIdx ? 0 : this.themeIdx += 1;
+    let nameIdx = this.themeNames.findIndex(x => x === this.theme.themeName);
+    let nextNameIdx = nameIdx === this.maxThemeNamesIdx ? 0 : nameIdx += 1;
+    this.themeIdx = this.themes.findIndex((theme) => {
+      return theme.themeType === this.theme.themeType &&
+        theme.themeName === this.themeNames[nextNameIdx];
+    });
   }
 
   getPrevThemeIdx() {
-    this.themeIdx = this.themeIdx === 0 ? this.maxThemeIdx : this.themeIdx -= 1;
+    let nameIdx = this.themeNames.findIndex(x => x === this.theme.themeName);
+    let nextNameIdx = nameIdx === 0 ? this.maxThemeNamesIdx : nameIdx -= 1;
+    this.themeIdx = this.themes.findIndex((theme) => {
+      return theme.themeType === this.theme.themeType &&
+        theme.themeName === this.themeNames[nextNameIdx];
+    });
   }
 
   initialize() {
@@ -72,42 +91,88 @@ class SettingController {
   }
 
   subscribe() {
-    bus.subscribe('action.setting.back', () => {
-      this.actionSettingBack();
-    });
-    bus.subscribe('action.setting.font-next', () => {
-      this.actionSettingFontNext();
-    });
-    bus.subscribe('action.setting.font-prev', () => {
-      this.actionSettingFontPrev();
-    });
-    bus.subscribe('action.setting.font-size', (fontSize) => {
-      this.actionSettingFontSize(fontSize);
-    });
-    bus.subscribe('action.setting.theme-next', () => {
-      this.actionSettingThemeNext();
-    });
-    bus.subscribe('action.setting.theme-prev', () => {
-      this.actionSettingThemePrev();
-    });
-    bus.subscribe('font.update', (font) => {
+    queue.subscribe('font.update', (font) => {
       this.fontUpdate(font);
     });
-    bus.subscribe('fonts.update', (fonts) => {
+
+    queue.subscribe('fonts.update', (fonts) => {
       this.fontsUpdate(fonts);
     });
-    bus.subscribe('theme.update', (theme) => {
+
+    queue.subscribe('setting.back', () => {
+      this.back();
+    });
+    queue.subscribe('setting.font-next', () => {
+      this.fontNext();
+    });
+    queue.subscribe('setting.font-prev', () => {
+      this.fontPrev();
+    });
+    queue.subscribe('setting.font-size', (fontSize) => {
+      this.fontSize(fontSize);
+    });
+
+    queue.subscribe('setting.theme-next', () => {
+      this.themeNext();
+    });
+    queue.subscribe('setting.theme-prev', () => {
+      this.themePrev();
+    });
+
+    queue.subscribe('setting.theme-dark', () => {
+      this.themeDark();
+    });
+    queue.subscribe('setting.theme-light', () => {
+      this.themeLight();
+    });
+
+    queue.subscribe('theme.update', (theme) => {
       this.themeUpdate(theme);
     });
-    bus.subscribe('themes.update', (themes) => {
+
+    queue.subscribe('themes.update', (themes) => {
       this.themesUpdate(themes);
     });
+  }
+
+  themeDark() {
+    let idxNow = this.themeIdx;
+    this.getDarkThemeIdx();
+    if (idxNow === this.themeIdx) {
+      return;
+    }
+    queue.publish('theme.change', this.themes[this.themeIdx]);
+  }
+
+  themeLight() {
+    let idxNow = this.themeIdx;
+    this.getLightThemeIdx();
+    if (idxNow === this.themeIdx) {
+      return;
+    }
+    queue.publish('theme.change', this.themes[this.themeIdx]);
+  }
+
+  themeNext() {
+    this.getNextThemeIdx();
+    queue.publish('theme.change', this.themes[this.themeIdx]);
+  }
+
+  themePrev() {
+    this.getPrevThemeIdx();
+    queue.publish('theme.change', this.themes[this.themeIdx]);
   }
 
   themeUpdate(theme) {
     this.theme = theme;
     if (!this.themeIdx) {
       this.themeIdx = this.themes.findIndex((theme) => {
+        return theme.themeType === this.theme.themeType &&
+          theme.themeName === this.theme.themeName;
+      });
+    }
+    if (!this.themeNameIdx) {
+      this.themeNameIdx = this.themeNames.findIndex((theme) => {
         return theme.themeName === this.theme.themeName;
       });
     }
@@ -115,7 +180,9 @@ class SettingController {
 
   themesUpdate(themes) {
     this.themes = themes;
-    this.maxThemeIdx = this.themes.length - 1;
+    this.maxThemesIdx = this.themes.length - 1;
+    this.themeNames = [...new Set(this.themes.map(x => x.themeName))];
+    this.maxThemeNamesIdx = this.themeNames.length - 1;
   }
 
 }

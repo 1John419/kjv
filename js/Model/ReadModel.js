@@ -1,8 +1,6 @@
 'use strict';
 
-import { bus } from '../EventBus.js';
-
-import { appPrefix } from '../util.js';
+import queue from '../CommandQueue.js';
 
 class ReadModel {
 
@@ -10,35 +8,14 @@ class ReadModel {
     this.initialize();
   }
 
-  columnChange(column) {
-    this.column = column;
-    this.saveColumn();
-    bus.publish('column.update', this.column);
+  columnModeChange(columnMode) {
+    this.columnMode = columnMode;
+    this.saveColumnMode();
+    queue.publish('read.column-mode.update', this.columnMode);
   }
 
-  getColumn() {
-    let column = localStorage.getItem(`${appPrefix}-column`);
-    if (!column) {
-      column = 1;
-    } else {
-      column = JSON.parse(column);
-    }
-    this.columnChange(column);
-  }
-
-  getSidebar() {
-    let sidebar = localStorage.getItem(`${appPrefix}-sidebar`);
-    if (!sidebar) {
-      sidebar = this.panes > 1 ? 'book' : 'none';
-    } else {
-      sidebar = JSON.parse(sidebar);
-    }
-    if (this.panes > 1) {
-      sidebar = sidebar === 'none' ? 'book' : sidebar;
-    } else if (sidebar !== 'none') {
-      sidebar = 'none';
-    }
-    this.sidebarChange(sidebar);
+  columnModeToogle() {
+    this.columnModeChange(!this.columnMode);
   }
 
   initialize() {
@@ -47,39 +24,80 @@ class ReadModel {
 
   panesChange(panes) {
     this.panes = panes;
-    bus.publish('panes.update', this.panes);
+    queue.publish('panes.update', this.panes);
   }
 
-  readGet() {
-    this.getColumn();
-    this.getSidebar();
+  restore() {
+    this.restoreColumnMode();
+    this.restoreSidebar();
   }
 
-  saveColumn() {
-    localStorage.setItem(`${appPrefix}-column`, JSON.stringify(this.column));
+  restoreColumnMode() {
+    let defaultColumnMode = false;
+    let columnMode = localStorage.getItem('columnMode');
+    if (!columnMode) {
+      columnMode = defaultColumnMode;
+    } else {
+      try {
+        columnMode = JSON.parse(columnMode);
+      } catch (error) {
+        columnMode = defaultColumnMode;
+      }
+      if (typeof columnMode !== 'boolean') {
+        columnMode = defaultColumnMode;
+      }
+    }
+    this.columnModeChange(columnMode);
+  }
+
+  restoreSidebar() {
+    let defaultSidebar = this.panes > 1 ? 'navigator' : 'none';
+    let sidebar = localStorage.getItem('sidebar');
+    if (!sidebar) {
+      sidebar = defaultSidebar;
+    } else {
+      try {
+        sidebar = JSON.parse(sidebar);
+      } catch (error) {
+        sidebar = defaultSidebar;
+      }
+    }
+    if (this.panes > 1) {
+      sidebar = sidebar === 'none' ? 'navigator' : sidebar;
+    } else if (sidebar !== 'none') {
+      sidebar = 'none';
+    }
+    this.sidebarChange(sidebar);
+  }
+
+  saveColumnMode() {
+    localStorage.setItem('columnMode',
+      JSON.stringify(this.columnMode));
   }
 
   saveSidebar() {
-    localStorage.setItem(`${appPrefix}-sidebar`, JSON.stringify(this.sidebar));
+    localStorage.setItem('sidebar', JSON.stringify(this.sidebar));
   }
 
   sidebarChange(sidebar) {
     this.sidebar = sidebar;
     this.saveSidebar();
-    bus.publish('sidebar.update', this.sidebar);
+    queue.publish('sidebar.update', this.sidebar);
   }
 
   subscribe() {
-    bus.subscribe('column.change',
-      (column) => { this.columnChange(column); }
-    );
-    bus.subscribe('panes.change', (panes) => {
+    queue.subscribe('panes.change', (panes) => {
       this.panesChange(panes);
     });
-    bus.subscribe('read.get',
-      () => { this.readGet(); }
+
+    queue.subscribe('read.column-mode.toggle', () => {
+      this.columnModeToogle();
+    });
+    queue.subscribe('read.restore',
+      () => { this.restore(); }
     );
-    bus.subscribe('sidebar.change', (sidebar) => {
+
+    queue.subscribe('sidebar.change', (sidebar) => {
       this.sidebarChange(sidebar);
     });
   }
