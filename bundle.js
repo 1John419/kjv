@@ -629,7 +629,7 @@
       query: 'Query',
       read: 'Read',
       rename: 'Rename',
-      sapphire: 'Sappire',
+      sapphire: 'Sapphire',
       save: 'Save',
       search: 'Search',
       searchFilter: 'Search Filter',
