@@ -3,13 +3,19 @@
 
 ## KJV
 
-An Offline King James Bible Search Application.
+Offline King James Bible Search.
+
+***
 
 Dedicated to our precious Lord and Saviour Jesus Christ.
 
 ALL the power belongs to My King! The glory is all His.
 
-"Heaven and earth shall pass away, but my words shall not pass away."
+
+> **Heaven and earth shall pass away, but my words shall not pass away.**
+
+
+***
 
 The application supports Android, Linux, or Windows platforms with the latest version of a Chromium-based browser.
 
