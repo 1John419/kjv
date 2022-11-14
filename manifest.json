@@ -34,7 +34,7 @@
   "name": "KJV Bible Search",
   "orientation": "any",
   "scope": "/",
-  "short_name": "PB",
+  "short_name": "KJV",
   "start_url": "/",
   "theme_color": "transparent"
 }

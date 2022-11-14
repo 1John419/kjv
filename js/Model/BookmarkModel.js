@@ -1,11 +1,11 @@
 'use strict';
 
-import queue from '../CommandQueue.js';
-import { tomeName } from '../data/dbUtil.js';
+import { queue } from '../CommandQueue.js';
 import { appText } from '../data/language.js';
 import {
   tomeDb,
-  tomeVerseCount
+  tomeName,
+  tomeVerseCount,
 } from '../data/tomeDb.js';
 
 const numSortAscend = (a, b) => a - b;

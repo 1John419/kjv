@@ -52,7 +52,7 @@ h3 {
 }
 
 hr {
-  border-color: var(--ui-base-fg);
+  border-top: 1px solid var(--ui-base-fg);
 }
 
 html {

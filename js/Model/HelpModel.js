@@ -1,6 +1,6 @@
 'use strict';
 
-import queue from '../CommandQueue.js';
+import { queue } from '../CommandQueue.js';
 
 const validTasks = ['help-read', 'help-topic'];
 const validTopics = ['about', 'bookmark', 'help', 'navigator', 'overview',

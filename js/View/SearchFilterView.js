@@ -1,6 +1,6 @@
 'use strict';
 
-import queue from '../CommandQueue.js';
+import { queue } from '../CommandQueue.js';
 import {
   templateBtnIcon,
   templateElement,
@@ -24,15 +24,15 @@ import {
   tomeBinVerseCount,
   tomeBinWordCount
 } from '../data/binIdx.js';
-import { tomeName } from '../data/dbUtil.js';
 import { appText } from '../data/language.js';
 import {
+  tomeBooks,
   tomeChapters,
-  tomeBooks
+  tomeName,
 } from '../data/tomeDb.js';
 import {
   bookLongName,
-  chapterName
+  chapterName,
 } from '../data/tomeIdx.js';
 
 const lowerToolSet = [

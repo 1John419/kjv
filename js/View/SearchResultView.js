@@ -1,6 +1,6 @@
 'use strict';
 
-import queue from '../CommandQueue.js';
+import { queue } from '../CommandQueue.js';
 import {
   templateAcrostic,
   templateElement,
@@ -25,11 +25,11 @@ import {
   tomeBinVerses,
   tomeBinWordCount
 } from '../data/binIdx.js';
-import { tomeName } from '../data/dbUtil.js';
 import { appText } from '../data/language.js';
 import {
   tomeBooks,
   tomeChapters,
+  tomeName,
 } from '../data/tomeDb.js';
 import {
   bookLongName,

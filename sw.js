@@ -2,7 +2,7 @@
 
 let appCaches = [
   {
-    name: 'core-20221112.01',
+    name: 'core-20221114.01',
     urls: [
       '/',
       '/bundle.js',
@@ -16,14 +16,14 @@ let appCaches = [
     ]
   },
   {
-    name: 'css-20221111.01',
+    name: 'css-20221114.01',
     urls: [
-      '/css/pb.css',
+      '/css/kjv.css',
       '/css/font.css',
     ]
   },
   {
-    name: 'font-20221111.01',
+    name: 'font-20221114.01',
     urls: [
       '/font/dancing-script-v24-latin-regular.woff2',
       '/font/inconsolata-v31-latin-regular.woff2',
@@ -37,7 +37,7 @@ let appCaches = [
     ]
   },
   {
-    name: 'help-20221111.01',
+    name: 'help-20221114.01',
     urls: [
       '/help/bookmark.html',
       '/help/help.html',
@@ -50,13 +50,13 @@ let appCaches = [
     ]
   },
   {
-    name: 'json-20221111.01',
+    name: 'json-20221114.01',
     urls: [
       '/json/kjv.json',
     ]
   },
   {
-    name: 'png-20221111.01',
+    name: 'png-20221114.01',
     urls: [
       '/favicon.png',
       '/png/icon-192.png',
@@ -70,28 +70,31 @@ let appCaches = [
 let cacheNames = appCaches.map((cache) => cache.name);
 
 self.addEventListener('install', (event) => {
-    event.waitUntil(caches.keys().then((keys) =>
-      Promise.all(appCaches.map(async (appCache) => {
-      if (keys.indexOf(appCache.name) === -1) {
-        const cache = await caches.open(appCache.name);
-        console.log(`Caching: ${appCache.name}`);
-        return await cache.addAll(appCache.urls);
-      } else {
-        console.log(`Found: ${appCache.name}`);
-        return Promise.resolve(true);
-      }
-    }))));
+    event.waitUntil(caches.keys().then((keys) => {
+      return Promise.all(appCaches.map(async (appCache) => {
+        if (keys.indexOf(appCache.name) === -1) {
+          const cache = await caches.open(appCache.name);
+          console.log(`Caching: ${appCache.name}`);
+          return await cache.addAll(appCache.urls);
+        } else {
+          console.log(`Found: ${appCache.name}`);
+          return Promise.resolve(true);
+        }
+      }));
+    }));
     self.skipWaiting();
   });
 
 self.addEventListener('activate', (event) => {
     event.waitUntil(
-      caches.keys().then((keys) => Promise.all(keys.map((key) => {
-        if (cacheNames.indexOf(key) === -1) {
-          console.log(`Deleting: ${key}`);
-          return caches.delete(key);
-        }
-      })))
+      caches.keys().then((keys) => {
+        return Promise.all(keys.map((key) => {
+          if (cacheNames.indexOf(key) === -1) {
+            console.log(`Deleting: ${key}`);
+            return caches.delete(key);
+          }
+        }));
+      })
     );
     self.clients.claim();
   });

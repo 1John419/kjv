@@ -5,19 +5,25 @@ import {
   versionCheck
 } from './dbUtil.js';
 import { chapterLastVerseIdx } from './tomeIdx.js';
-import { tomeName } from '../data/dbUtil.js';
 import { progress } from '../load.js';
 
-
-const tomeUrl = `/json/${tomeName}.json`;
-const tomeVersion = '2022-11-01';
-
+const tomeSetup = {
+  name: 'kjv',
+  stores: {
+    lists: 'k',
+    verses: 'k',
+    words: 'k'
+  },
+  url: '/json/kjv.json',
+  version: '2020-01-07',
+};
 
 export let tomeAcrostics = {};
 export let tomeBooks = null;
 export let tomeChapters = null;
 export let tomeCitations = [];
 export let tomeDb = null;
+export let tomeName = tomeSetup.name;
 export let tomeVerseCount = null;
 export let tomeWords = null;
 
@@ -40,7 +46,7 @@ export const initializeTome = async () => {
   progress('');
   progress('* tome database *');
   progress('');
-  tomeDb = await versionCheck(tomeVersion);
+  tomeDb = await versionCheck(tomeSetup);
   await populateTome();
   await loadTomeAcrostics();
   await loadTomeBooks();
@@ -84,7 +90,7 @@ const loadTomeWords = async () => {
 const populateTome = async () => {
   let wordCount = await tomeDb.words.count();
   if (wordCount === 0) {
-    let data = await fetchJson(tomeUrl);
+    let data = await fetchJson(tomeSetup.url);
 
     progress('populating lists...');
     await tomeDb.lists.bulkAdd(data.lists);

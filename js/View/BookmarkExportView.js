@@ -1,6 +1,6 @@
 'use strict';
 
-import queue from '../CommandQueue.js';
+import { queue } from '../CommandQueue.js';
 import {
   templateDivDialog,
   templatePage,
@@ -8,7 +8,7 @@ import {
   templateToolbarLower,
   templateToolbarUpper
 } from '../template.js';
-import { tomeName } from '../data/dbUtil.js';
+import { tomeName } from '../data/tomeDb.js';
 import { appText } from '../data/language.js'
 
 const dialogToolset = [

@@ -11,9 +11,7 @@ Dedicated to our precious Lord and Saviour Jesus Christ.
 
 ALL the power belongs to My King! The glory is all His.
 
-
 > **Heaven and earth shall pass away, but my words shall not pass away.**
-
 
 ***
 
