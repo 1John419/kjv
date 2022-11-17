@@ -1,29 +1,29 @@
 'use strict';
 
-import { queue } from '../CommandQueue.js';
+import {
+  queue,
+} from '../CommandQueue.js';
 import {
   templateDivDialog,
   templateElement,
   templatePage,
   templateScroll,
   templateToolbarLower,
-  templateToolbarUpper
+  templateToolbarUpper,
 } from '../template.js';
-import { appText } from '../data/language.js';
 
 const dialogToolset = [
-  { type: 'label', text: `${appText.folderName}` },
-  { type: 'input', ariaLabel: `${appText.name}` },
-  { type: 'btn', cssModifier: 'save', ariaLabel: `${appText.save}` }
+  { type: 'label', text: 'Folder Name' },
+  { type: 'input', ariaLabel: 'Name' },
+  { type: 'btn', id: 'save', ariaLabel: 'Save' },
 ];
 
 const lowerToolSet = [
-  { type: 'btn', icon: 'bookmark-folder', ariaLabel: `${appText.bookmarkFolder}` }
+  { type: 'btn', icon: 'bookmark-folder', ariaLabel: 'Bookmark Folder' },
 ];
 
 const upperToolSet = [
-  { type: 'banner', cssModifier: 'bookmark-folder-rename',
-    text: `${appText.folderRename}`}
+  { type: 'banner', cssModifier: 'bookmark-folder-rename', text: 'Folder Rename'},
 ];
 
 class BookmarkFolderRenameView {
@@ -124,7 +124,7 @@ class BookmarkFolderRenameView {
     this.page.classList.remove('page--hide');
     this.message.classList.add('message--hide');
     this.namePkg = {
-      old: this.folderName
+      old: this.folderName,
     };
     this.inputName.value = this.folderName;
     this.inputName.focus();

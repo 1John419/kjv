@@ -1,27 +1,33 @@
 'use strict';
 
-import { queue } from '../CommandQueue.js';
+import {
+  queue,
+} from '../CommandQueue.js';
 import {
   templateDivDialog,
   templatePage,
   templateScroll,
   templateToolbarLower,
-  templateToolbarUpper
+  templateToolbarUpper,
 } from '../template.js';
-import { tomeName } from '../data/tomeDb.js';
-import { appText } from '../data/language.js'
+import {
+  tomeName,
+} from '../data/tomeDb.js';
+
+const message = 'Select All and Copy the text below. ' +
+  'Then Paste in a text editor and save the file.';
 
 const dialogToolset = [
-  { type: 'label', text: `${appText.bookmarkExportMessage}` },
-  { type: 'textarea', ariaLabel: `${appText.bookmarkPackage}` },
+  { type: 'label', text: message },
+  { type: 'textarea', ariaLabel: 'Bookmark Package' },
 ];
 
 const lowerToolSet = [
-  { type: 'btn', icon: 'bookmark-folder', ariaLabel: `${appText.bookmarkFolder}` }
+  { type: 'btn', icon: 'bookmark-folder', ariaLabel: 'Bookmark Folder' },
 ];
 
 const upperToolSet = [
-  { type: 'banner', cssModifier: 'bookmark-export', text: `${appText.bookmarkExport}` }
+  { type: 'banner', cssModifier: 'bookmark-export', text: 'Bookmark Export' },
 ];
 
 class BookmarkExportview {

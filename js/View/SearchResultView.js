@@ -1,15 +1,19 @@
 'use strict';
 
-import { queue } from '../CommandQueue.js';
+import {
+  queue,
+} from '../CommandQueue.js';
 import {
   templateAcrostic,
   templateElement,
   templatePage,
   templateScroll,
   templateToolbarLower,
-  templateToolbarUpper
+  templateToolbarUpper,
 } from '../template.js';
-import { removeAllChildren } from '../util.js';
+import {
+  removeAllChildren,
+} from '../util.js';
 import {
   bookBinChapters,
   bookBinSliceEnd,
@@ -23,9 +27,8 @@ import {
   tomeBinBooks,
   tomeBinVerseCount,
   tomeBinVerses,
-  tomeBinWordCount
+  tomeBinWordCount,
 } from '../data/binIdx.js';
-import { appText } from '../data/language.js';
 import {
   tomeBooks,
   tomeChapters,
@@ -35,18 +38,18 @@ import {
   bookLongName,
   chapterName,
   verseCitation,
-  verseText
+  verseText,
 } from '../data/tomeIdx.js';
 
 const lowerToolSet = [
-  { type: 'btn', icon: 'back', ariaLabel: `${appText.back}` },
-  { type: 'btn', icon: 'search-lookup', ariaLabel: `${appText.searchLookup}` },
-  { type: 'btn', icon: 'filter', ariaLabel: `${appText.searchFilter}` },
-  { type: 'btn', icon: 'history', ariaLabel: `${appText.searchHistory}` },
+  { type: 'btn', icon: 'back', ariaLabel: 'Back' },
+  { type: 'btn', icon: 'search-lookup', ariaLabel: 'Search Lookup' },
+  { type: 'btn', icon: 'filter', ariaLabel: 'Search Filter' },
+  { type: 'btn', icon: 'history', ariaLabel: 'Search History' },
 ];
 
 const upperToolSet = [
-  { type: 'banner', cssModifier: 'search-result', text: null }
+  { type: 'banner', cssModifier: 'search-result', text: null },
 ];
 
 const binIdx = 0;
@@ -113,7 +116,7 @@ class SearchResultView {
     this.loadMore = templateElement('div', 'load-more', 'search-result', null, null);
     this.btnLoadMore = document.createElement('button');
     this.btnLoadMore.classList.add('btn-load-more');
-    this.btnLoadMore.textContent = `${appText.loadMore}`;
+    this.btnLoadMore.textContent = 'Load More';
     this.loadMore.appendChild(this.btnLoadMore);
     this.scroll.appendChild(this.loadMore);
 

@@ -156,7 +156,7 @@
     stores: {
       lists: 'k',
       verses: 'k',
-      words: 'k'
+      words: 'k',
     },
     url: '/json/kjv.json',
     version: '2020-01-07',
@@ -554,118 +554,19 @@
     scrollElement.scrollLeft = x;
   };
 
-  const appText = {
-      about: 'About',
-      amethyst: 'Amethyst',
-      back: 'Back',
-      beryl: 'Beryl',
-      book: 'Book',
-      bookmark: 'Bookmark',
-      bookmarkExport: 'Bookmark Export',
-      bookmarkExportMessage: 'Select All and Copy the text below. ' +
-      'Then Paste in a text editor and save the file.',
-      bookmarkFolder: 'Bookmark Folder',
-      bookmarkFolderAdd: 'Bookmark Folder Add',
-      bookmarkImport: 'Bookmark Import',
-      bookmarkList: 'Bookmark List',
-      bookmarkPackage: 'Bookmark Package',
-      cancel: 'Cancel',
-      chalcedony: 'Chalcedony',
-      chapter: 'Chapter',
-      clearHistory: 'Clear History',
-      columnMode: 'Column Mode',
-      copy: 'Copy',
-      dark: 'Dark',
-      default: 'Default',
-      delete:'Delete',
-      deleteFolder:'Delete Folder',
-      down: 'Down',
-      duplicateFolderName: 'Duplicate Folder Name',
-      emerald: 'Emerald',
-      empty: 'EMPTY',
-      enterSearchExpression: 'Enter search expression.',
-      expandBookmarks: 'Expand Bookmarks',
-      export: 'Export',
-      extraLarge: 'Extra Large',
-      extraExtraLarge: 'Extra Extra Large',
-      foldBook: 'Fold Book',
-      folderAdd: 'Folder Add',
-      folderDelete: 'Folder Delete',
-      folderName: 'Folder Name',
-      folderRename: 'Folder Rename',
-      font: 'Font',
-      fontSize: 'Font Size',
-      fontSizeSample: 'Aa',
-      help: 'Help',
-      helpRead: 'Help Read',
-      helpTopic: 'Help Topic',
-      import: 'Import',
-      importSuccessful: 'Import successful.',
-      invalidFolderStructure: 'Invalid folder structure',
-      invalidJsonString: 'Invalid JSON string',
-      invalidQueryExpression: 'Invalid query expression',
-      invalidPackageStructure: 'Invalid package structure',
-      invalidVerse: 'Invalid verse',
-      jasper: 'Jasper',
-      large: 'Large',
-      light: 'Light',
-      loadMore: 'Load More',
-      medium: 'Medium',
-      menu: 'Menu',
-      move: 'Move',
-      moveCopy: 'Move/Copy',
-      navigator: 'Navigator',
-      name: 'Name',
-      next: 'Next',
-      nextChapter: 'Next Chapter',
-      noBookmarksSaved: 'No bookmarks saved.',
-      noSearchesSaved: 'No Searches Saved.',
-      noTargetFolder: 'No Target Folder.',
-      ok: 'OK',
-      overview: 'Overview',
-      pasteBookmarkPackageHere: 'Paste Bookmark Package Here:',
-      previous: 'Previous',
-      previousChapter: 'Previous Chapter',
-      query: 'Query',
-      read: 'Read',
-      rename: 'Rename',
-      sapphire: 'Sapphire',
-      save: 'Save',
-      search: 'Search',
-      searchFilter: 'Search Filter',
-      searchHistory: 'Search History',
-      searchLookup: 'Search Lookup',
-      searchResult: 'Search Result',
-      setting: 'Setting',
-      small: 'Small',
-      sortAscending: 'Sort Ascending',
-      sortInvert: 'Sort Invert',
-      thatsMyKing: 'That\'s MY KING!',
-      theme: 'Theme',
-      tomeMismatch: 'Tome mismatch',
-      topaz: 'Topaz',
-      topic: 'Topic',
-      unfoldBook: 'Unfold Book',
-      up: 'Up',
-  };
-
-  const firstJohn419Citation = '1 John 4:19';
-  const firstJohn419Text = 'We love him, because he first loved us.';
-  const defaultQuery = 'day of the lord';
-
   const lowerToolSet$h = [
-    { type: 'btn', icon: 'navigator', ariaLabel: `${appText.navigator}` },
-    { type: 'btn', icon: 'bookmark', ariaLabel: `${appText.bookmark}` },
-    { type: 'btn', icon: 'search', ariaLabel: `${appText.search}` },
-    { type: 'btn', icon: 'setting', ariaLabel: `${appText.setting}` },
-    { type: 'btn', icon: 'help', ariaLabel: `${appText.help}` },
-    { type: 'btn', icon: 'column-mode', ariaLabel: `${appText.columnMode}` },
+    { type: 'btn', icon: 'navigator', ariaLabel: 'Navigator' },
+    { type: 'btn', icon: 'bookmark', ariaLabel: 'Bookmark' },
+    { type: 'btn', icon: 'search', ariaLabel: 'Search' },
+    { type: 'btn', icon: 'setting', ariaLabel: 'Setting' },
+    { type: 'btn', icon: 'help', ariaLabel: 'Help' },
+    { type: 'btn', icon: 'column-mode', ariaLabel: 'Column Mode' },
   ];
 
   const upperToolSet$h = [
-    { type: 'btn', icon: 'prev', ariaLabel: `${appText.previousChapter}` },
+    { type: 'btn', icon: 'prev', ariaLabel: 'Previous Chapter' },
     { type: 'banner', cssModifier: 'read', text: null },
-    { type: 'btn', icon: 'next', ariaLabel: `${appText.nextChapter}` }
+    { type: 'btn', icon: 'next', ariaLabel: 'Next Chapter' },
   ];
 
   class ReadView {
@@ -1265,7 +1166,9 @@
 
   }
 
-  const validTasks$3 = ['navigator-book', 'navigator-chapter'];
+  const validTasks$3 = [
+    'navigator-book', 'navigator-chapter',
+  ];
 
   const CHAPTER_IDX_GENESIS_1 = 0;
 
@@ -1406,12 +1309,12 @@
   const indices = [...Array(66).keys()];
 
   const lowerToolSet$g = [
-    { type: 'btn', icon: 'back', ariaLabel: `${appText.back}` },
-    { type: 'btn', icon: 'navigator-chapter', ariaLabel: `${appText.chapter}` }
+    { type: 'btn', icon: 'back', ariaLabel: 'Back' },
+    { type: 'btn', icon: 'navigator-chapter', ariaLabel: 'Chapter' },
   ];
 
   const upperToolSet$g = [
-    { type: 'banner', cssModifier: 'navigator-book', text: `${appText.book}` }
+    { type: 'banner', cssModifier: 'navigator-book', text: 'Book' },
   ];
 
   class NavigatorBookView {
@@ -1568,12 +1471,12 @@
   }
 
   const lowerToolSet$f = [
-    { type: 'btn', icon: 'back', ariaLabel: `${appText.back}` },
-    { type: 'btn', icon: 'navigator-book', ariaLabel: `${appText.book}` }
+    { type: 'btn', icon: 'back', ariaLabel: 'Back' },
+    { type: 'btn', icon: 'navigator-book', ariaLabel: 'Book' },
   ];
 
   const upperToolSet$f = [
-    { type: 'banner', cssModifier: 'navigator-chapter', text: null }
+    { type: 'banner', cssModifier: 'navigator-chapter', text: null },
   ];
 
   class NavigatorChapterView {
@@ -1883,11 +1786,16 @@
 
   const numSortAscend = (a, b) => a - b;
 
-  const bookmarkFolderReroute = ['bookmark-folder-add', 'bookmark-folder-delete',
-    'bookmark-folder-rename', 'bookmark-export', 'bookmark-import'
+  const bookmarkFolderReroute = [
+    'bookmark-folder-add', 'bookmark-folder-delete', 'bookmark-folder-rename',
+    'bookmark-export', 'bookmark-import',
   ];
-  const bookmarkListReroute = ['bookmark-move-copy'];
-  const validTasks$2 = ['bookmark-list', 'bookmark-folder'];
+  const bookmarkListReroute = [
+    'bookmark-move-copy',
+  ];
+  const validTasks$2 = [
+    'bookmark-list', 'bookmark-folder',
+  ];
 
   const firstEntry = 0;
 
@@ -1926,7 +1834,7 @@
     }
 
     createFolders() {
-      return [this.createFolder(`${appText.default}`)];
+      return [this.createFolder('Default')];
     }
 
     async delete(verseIdx) {
@@ -1969,7 +1877,7 @@
         this.updateFolderList();
         queue.publish('bookmark.folder.added', null);
       } else {
-        queue.publish('bookmark.folder.add.error', `${appText.duplicateFolderName}`);
+        queue.publish('bookmark.folder.add.error', 'Duplicate Folder Name');
       }
     }
 
@@ -1977,7 +1885,7 @@
       let idx = this.getFolderIdx(folderName);
       this.folders.splice(idx, 1);
       if (this.folders.length === 0) {
-        await this.folderAdd(`${appText.default}`);
+        await this.folderAdd('Default');
       }
       this.updateFolders();
       let firstFolderName = this.folders[firstEntry].name;
@@ -1997,7 +1905,7 @@
     folderImport(pkgStr) {
       let bookmarkPkg = this.getBookmarkPkg(pkgStr);
       if (!bookmarkPkg) {
-        queue.publish('bookmark-import.message', `${appText.invalidJsonString}`);
+        queue.publish('bookmark-import.message', 'Invalid JSON String');
       } else {
         let status = this.validatePkg(bookmarkPkg);
         if (status === 'OK') {
@@ -2019,7 +1927,7 @@
 
     async folderRename(namePkg) {
       if (namePkg.old === namePkg.new) {
-        queue.publish('bookmark.folder.rename.error', `${appText.duplicateFolderName}`);
+        queue.publish('bookmark.folder.rename.error', 'Duplicate Folder Name');
       } else {
         let oldFolder = this.getFolder(namePkg.old);
         oldFolder.name = namePkg.new;
@@ -2043,7 +1951,7 @@
             !folder.bookmarks ||
             !Array.isArray(folder.bookmarks)
           ) {
-            status = `${appText.invalidFolderStructure}`;
+            status = 'Invalid Folder Structure';
             error = true;
           }
           if (!error) {
@@ -2053,7 +1961,7 @@
                 bookmark < 0 ||
                 bookmark > this.maxIdx
               ) {
-                status = `${appText.invalidVerse}`;
+                status = 'Invalid Verse';
                 error = true;
               }
               return error;
@@ -2119,7 +2027,7 @@
       }
       this.updateFolders();
       this.updateFolderList();
-      queue.publish('bookmark-import.message', `${appText.importSuccessful}`);
+      queue.publish('bookmark-import.message', 'Import Successful');
     }
 
     initialize() {
@@ -2174,7 +2082,7 @@
     }
 
     async restoreActiveFolderName() {
-      let defaultFolderName = `${appText.default}`;
+      let defaultFolderName = 'Default';
       let activeFolderName =
         localStorage.getItem('activeFolderName');
       if (!activeFolderName) {
@@ -2394,29 +2302,29 @@
         !bookmarkPkg.folders ||
         !Array.isArray(bookmarkPkg.folders)
       ) {
-        status = `${appText.invalidPackageStructure}`;
+        status = 'Invalid Package Structure';
       }
       if (bookmarkPkg.tome !== tomeName) {
-        status = `${appText.tomeMismatch}`;
+        status = 'Tome Mismatch';
       }
       return status;
     }
   }
 
   const actionSet$2 = [
-    { icon: 'up', ariaLabel: `${appText.up}` },
-    { icon: 'down', ariaLabel: `${appText.down}` },
-    { icon: 'move-copy', ariaLabel: `${appText.moveCopy}` },
-    { icon: 'delete', ariaLabel: `${appText.delete}` },
-    { icon: 'cancel', ariaLabel: `${appText.cancel}` }
+    { icon: 'up', ariaLabel: 'Up' },
+    { icon: 'down', ariaLabel: 'Down' },
+    { icon: 'move-copy', ariaLabel: 'Move/Copy' },
+    { icon: 'delete', ariaLabel: 'Delete' },
+    { icon: 'cancel', ariaLabel: 'Cancel' },
   ];
 
   const lowerToolSet$e = [
-    { type: 'btn', icon: 'back', ariaLabel: `${appText.back}` },
-    { type: 'btn', icon: 'sort-ascend', ariaLabel: `${appText.sortAscending}` },
-    { type: 'btn', icon: 'sort-invert', ariaLabel: `${appText.sortInvert}` },
-    { type: 'btn', icon: 'bookmark-folder', ariaLabel: `${appText.bookmarkFolder}` },
-    { type: 'btn', icon: 'expand-mode', ariaLabel: `${appText.expandBookmarks}` },
+    { type: 'btn', icon: 'back', ariaLabel: 'Back' },
+    { type: 'btn', icon: 'sort-ascend', ariaLabel: 'Sort Ascending' },
+    { type: 'btn', icon: 'sort-invert', ariaLabel: 'Sort Invert' },
+    { type: 'btn', icon: 'bookmark-folder', ariaLabel: 'Bookmark Folder' },
+    { type: 'btn', icon: 'expand-mode', ariaLabel: 'Expand Bookmarks' },
   ];
 
   const upperToolSet$e = [
@@ -2470,7 +2378,7 @@
       btnRef.textContent = citationByVerseIdx(verseIdx);
       btnRef.dataset.verseIdx = verseIdx;
       entry.appendChild(btnRef);
-      let btnMenu = templateBtnIcon('h-menu', 'h-menu', `${appText.menu}`);
+      let btnMenu = templateBtnIcon('h-menu', 'h-menu', 'Menu');
       entry.appendChild(btnMenu);
       return entry;
     }
@@ -2484,7 +2392,7 @@
       this.scroll = templateScroll('bookmark-list');
 
       this.empty = templateElement('div', 'empty', 'bookmark-list', null,
-        `${appText.noBookmarksSaved}`);
+        'No bookmarks saved.');
       this.scroll.appendChild(this.empty);
 
       this.list = templateElement('div', 'list', 'bookmark-list', null, null);
@@ -2708,17 +2616,17 @@
   }
 
   const actionSet$1 = [
-    { icon: 'move', ariaLabel: `${appText.move}` },
-    { icon: 'copy', ariaLabel: `${appText.copy}` },
-    { icon: 'cancel', ariaLabel: `${appText.cancel}` }
+    { icon: 'move', ariaLabel: 'Move' },
+    { icon: 'copy', ariaLabel: 'Copy' },
+    { icon: 'cancel', ariaLabel: 'Cancel' },
   ];
 
   const lowerToolSet$d = [
-    { type: 'btn', icon: 'bookmark-folder', ariaLabel: `${appText.BookmarkFolder}` },
+    { type: 'btn', icon: 'bookmark-folder', ariaLabel: 'Bookmark Folder' },
   ];
 
   const upperToolSet$d = [
-    { type: 'banner', cssModifier: 'bookmark-move-copy', text: null }
+    { type: 'banner', cssModifier: 'bookmark-move-copy', text: null },
   ];
 
   class BookmarkMoveCopyView {
@@ -2764,7 +2672,7 @@
       let btnEntry = document.createElement('button');
       btnEntry.classList.add('btn-entry', 'btn-entry--bookmark-move-copy');
       btnEntry.textContent = folderName;
-      let btnMenu = templateBtnIcon('h-menu', 'h-menu', `${appText.menu}`);
+      let btnMenu = templateBtnIcon('h-menu', 'h-menu', 'Menu');
       entry.appendChild(btnEntry);
       entry.appendChild(btnMenu);
       return entry;
@@ -2779,7 +2687,7 @@
       this.scroll = templateScroll('bookmark-move-copy');
 
       this.empty = templateElement('div', 'empty', 'bookmark-move-copy', null,
-        `${appText.noTargetFolder}`);
+        'No Target Folder');
       this.scroll.appendChild(this.empty);
 
       this.list = templateElement('div', 'list', 'bookmark-move-copy', null,
@@ -2800,7 +2708,7 @@
     copy(folderName) {
       let copyPkg = {
         to: folderName,
-        verseIdx: this.verseIdx
+        verseIdx: this.verseIdx,
       };
       queue.publish('bookmark-move-copy.copy', copyPkg);
     }
@@ -2856,7 +2764,7 @@
     move(folderName) {
       let movePkg = {
         to: folderName,
-        verseIdx: this.verseIdx
+        verseIdx: this.verseIdx,
       };
       queue.publish('bookmark-move-copy.move', movePkg);
     }
@@ -2935,23 +2843,23 @@
   }
 
   const actionSet = [
-    { icon: 'up', ariaLabel: `${appText.up}` },
-    { icon: 'down', ariaLabel: `${appText.down}` },
-    { icon: 'rename', ariaLabel: `${appText.rename}` },
-    { icon: 'delete', ariaLabel: `${appText.delete}` },
-    { icon: 'cancel', ariaLabel: `${appText.cancel}` }
+    { icon: 'up', ariaLabel: 'Up' },
+    { icon: 'down', ariaLabel: 'Down' },
+    { icon: 'rename', ariaLabel: 'Rename' },
+    { icon: 'delete', ariaLabel: 'Delete' },
+    { icon: 'cancel', ariaLabel: 'Cancel' },
   ];
 
   const lowerToolSet$c = [
-    { type: 'btn', icon: 'back', ariaLabel: `${appText.back}` },
-    { type: 'btn', icon: 'bookmark-folder-add', ariaLabel: `${appText.bookmarkFolderAdd}` },
-    { type: 'btn', icon: 'import', ariaLabel: `${appText.import}` },
-    { type: 'btn', icon: 'export', ariaLabel: `${appText.export}` },
-    { type: 'btn', icon: 'bookmark-list', ariaLabel: `${appText.bookmarkList}` }
+    { type: 'btn', icon: 'back', ariaLabel: 'Back' },
+    { type: 'btn', icon: 'bookmark-folder-add', ariaLabel: 'Bookmark Folder Add' },
+    { type: 'btn', icon: 'import', ariaLabel: 'Import' },
+    { type: 'btn', icon: 'export', ariaLabel: 'Export' },
+    { type: 'btn', icon: 'bookmark-list', ariaLabel: 'Bookmark List' },
   ];
 
   const upperToolSet$c = [
-    { type: 'banner', cssModifier: 'bookmark-folder', text: `${appText.bookmarkFolder}` }
+    { type: 'banner', cssModifier: 'bookmark-folder', text: 'Bookmark Folder' },
   ];
 
   class BookmarkFolderView {
@@ -3001,7 +2909,7 @@
       let btnEntry = document.createElement('button');
       btnEntry.classList.add('btn-entry', 'btn-entry--folder');
       btnEntry.textContent = folderName;
-      let btnMenu = templateBtnIcon('h-menu', 'h-menu', `${appText.menu}`);
+      let btnMenu = templateBtnIcon('h-menu', 'h-menu', 'Menu');
       entry.appendChild(btnEntry);
       entry.appendChild(btnMenu);
       return entry;
@@ -3153,17 +3061,17 @@
   }
 
   const dialogToolset$5 = [
-    { type: 'label', text: `${appText.name}` },
-    { type: 'input', ariaLabel: `${appText.name}` },
-    { type: 'btn', cssModifier: 'save', ariaLabel: `${appText.save}` }
+    { type: 'label', text: 'Name' },
+    { type: 'input', ariaLabel: 'Name' },
+    { type: 'btn', id: 'save', ariaLabel: 'Save' },
   ];
 
   const lowerToolSet$b = [
-    { type: 'btn', icon: 'bookmark-folder', ariaLabel: `${appText.bookmarkFolder}` }
+    { type: 'btn', icon: 'bookmark-folder', ariaLabel: 'Bookmark Folder' },
   ];
 
   const upperToolSet$b = [
-    { type: 'banner', cssModifier: 'bookmark-folder-add', text: `${appText.folderAdd}` }
+    { type: 'banner', cssModifier: 'bookmark-folder-add', text: 'Folder Add' },
   ];
 
   class BookmarkFolderAddView {
@@ -3288,16 +3196,15 @@
 
   const dialogToolset$4 = [
     { type: 'label', text: null },
-    { type: 'btn', cssModifier: 'delete', ariaLabel: `${appText.delete}` }
+    { type: 'btn', id: 'delete', ariaLabel: 'Delete' },
   ];
 
   const lowerToolSet$a = [
-    { type: 'btn', icon: 'bookmark-folder', ariaLabel: `${appText.bookmarkFolder}` }
+    { type: 'btn', icon: 'bookmark-folder', ariaLabel: 'Bookmark Folder' },
   ];
 
   const upperToolSet$a = [
-    { type: 'banner', cssModifier: 'bookmark-folder-delete',
-      text: `${appText.folderDelete}` }
+    { type: 'banner', cssModifier: 'bookmark-folder-delete', text: 'Folder Delete' },
   ];
 
   class BookmarkFolderDeleteView {
@@ -3401,24 +3308,23 @@
     }
 
     updateLabel() {
-      this.label.innerHTML = `${appText.deleteFolder} '${this.folderName}'?`;
+      this.label.innerHTML = `Delete Folder '${this.folderName}'?`;
     }
 
   }
 
   const dialogToolset$3 = [
-    { type: 'label', text: `${appText.folderName}` },
-    { type: 'input', ariaLabel: `${appText.name}` },
-    { type: 'btn', cssModifier: 'save', ariaLabel: `${appText.save}` }
+    { type: 'label', text: 'Folder Name' },
+    { type: 'input', ariaLabel: 'Name' },
+    { type: 'btn', id: 'save', ariaLabel: 'Save' },
   ];
 
   const lowerToolSet$9 = [
-    { type: 'btn', icon: 'bookmark-folder', ariaLabel: `${appText.bookmarkFolder}` }
+    { type: 'btn', icon: 'bookmark-folder', ariaLabel: 'Bookmark Folder' },
   ];
 
   const upperToolSet$9 = [
-    { type: 'banner', cssModifier: 'bookmark-folder-rename',
-      text: `${appText.folderRename}`}
+    { type: 'banner', cssModifier: 'bookmark-folder-rename', text: 'Folder Rename'},
   ];
 
   class BookmarkFolderRenameView {
@@ -3519,7 +3425,7 @@
       this.page.classList.remove('page--hide');
       this.message.classList.add('message--hide');
       this.namePkg = {
-        old: this.folderName
+        old: this.folderName,
       };
       this.inputName.value = this.folderName;
       this.inputName.focus();
@@ -3554,17 +3460,20 @@
 
   }
 
+  const message = 'Select All and Copy the text below. ' +
+    'Then Paste in a text editor and save the file.';
+
   const dialogToolset$2 = [
-    { type: 'label', text: `${appText.bookmarkExportMessage}` },
-    { type: 'textarea', ariaLabel: `${appText.bookmarkPackage}` },
+    { type: 'label', text: message },
+    { type: 'textarea', ariaLabel: 'Bookmark Package' },
   ];
 
   const lowerToolSet$8 = [
-    { type: 'btn', icon: 'bookmark-folder', ariaLabel: `${appText.bookmarkFolder}` }
+    { type: 'btn', icon: 'bookmark-folder', ariaLabel: 'Bookmark Folder' },
   ];
 
   const upperToolSet$8 = [
-    { type: 'banner', cssModifier: 'bookmark-export', text: `${appText.bookmarkExport}` }
+    { type: 'banner', cssModifier: 'bookmark-export', text: 'Bookmark Export' },
   ];
 
   class BookmarkExportview {
@@ -3657,17 +3566,17 @@
   }
 
   const dialogToolset$1 = [
-    { type: 'label', text: `${appText.pasteBookmarkPackageHere}` },
-    { type: 'textarea', ariaLabel: `${appText.bookmarkPackage}` },
-    { type: 'btn', cssModifier: 'import', ariaLabel: `${appText.import}` }
+    { type: 'label', text: 'Paste Bookmark Package Here:' },
+    { type: 'textarea', ariaLabel: 'Bookmark Package' },
+    { type: 'btn', id: 'import', ariaLabel: 'Import' },
   ];
 
   const lowerToolSet$7 = [
-    { type: 'btn', icon: 'bookmark-folder', ariaLabel: `${appText.bookmarkFolder}` }
+    { type: 'btn', icon: 'bookmark-folder', ariaLabel: 'Bookmark Folder' },
   ];
 
   const upperToolSet$7 = [
-    { type: 'banner', cssModifier: 'bookmark-import', text: `${appText.bookmarkImport}` }
+    { type: 'banner', cssModifier: 'bookmark-import', text: 'Bookmark Import' },
   ];
 
   class BookmarkImportView {
@@ -3718,7 +3627,7 @@
     error(message) {
       this.message.textContent = message;
       this.message.classList.remove('message--hide');
-      if (message === `${appText.importSuccessful}`) {
+      if (message === 'Import successful.') {
         this.textarea.value = '';
       }
     }
@@ -4153,7 +4062,7 @@
           verseCount,
           sliceStart,
           sliceEnd,
-          chapters
+          chapters,
         ]);
         bookBin = tomeBin[tomeBinBooks][tomeBin[tomeBinBooks].length - 1];
       }
@@ -4174,7 +4083,7 @@
           wordCount,
           verseCount,
           sliceStart,
-          sliceEnd
+          sliceEnd,
         ]);
         chapterBin = bookBin[bookBinChapters][bookBin[bookBinChapters].length - 1];
       }
@@ -4336,7 +4245,7 @@
     }
 
     initialize() {
-      this.subscribe();
+      return;
     }
 
     initializeTomeBin() {
@@ -4348,7 +4257,7 @@
         wordCount,
         verseCount,
         books,
-        verses
+        verses,
       ];
     }
 
@@ -4394,14 +4303,16 @@
       return this.rig;
     }
 
-    subscribe() {}
-
   }
 
-  const searchResultReroute = ['search-filter', 'search-history'];
-  const validTasks$1 = ['search-result', 'search-lookup', 'search-filter',
-    'search-history'
+  const searchResultReroute = [
+    'search-filter', 'search-history',
   ];
+  const validTasks$1 = [
+    'search-result', 'search-lookup', 'search-filter', 'search-history',
+  ];
+
+  const DEFAULT_QUERY = 'day of the lord';
 
   class SearchModel {
 
@@ -4465,9 +4376,9 @@
       if (rig.state === 'ERROR') {
         let message;
         if (rig.type === 'EMPTY') {
-          message = `${appText.enterSearchExpression}`;
+          message = 'Enter a search expression.';
         } else if (rig.type === 'INVALID') {
-          message = `${appText.invalidQueryExpression}`;
+          message = 'Invalid query expression.';
         } else if (rig.wordStatus !== 'OK') {
           message = rig.wordStatus;
         }
@@ -4537,6 +4448,7 @@
     }
 
     async restoreQuery() {
+      let defaultQuery = DEFAULT_QUERY;
       let searchQuery = localStorage.getItem('searchQuery');
       if (!searchQuery) {
         searchQuery = defaultQuery;
@@ -4622,7 +4534,7 @@
     tomeFilter() {
       return {
         bookIdx: -1,
-        chapterIdx: -1
+        chapterIdx: -1,
       };
     }
 
@@ -4640,14 +4552,14 @@
   }
 
   const lowerToolSet$6 = [
-    { type: 'btn', icon: 'back', ariaLabel: `${appText.back}` },
-    { type: 'btn', icon: 'search-lookup', ariaLabel: `${appText.searchLookup}` },
-    { type: 'btn', icon: 'filter', ariaLabel: `${appText.searchFilter}` },
-    { type: 'btn', icon: 'history', ariaLabel: `${appText.searchHistory}` },
+    { type: 'btn', icon: 'back', ariaLabel: 'Back' },
+    { type: 'btn', icon: 'search-lookup', ariaLabel: 'Search Lookup' },
+    { type: 'btn', icon: 'filter', ariaLabel: 'Search Filter' },
+    { type: 'btn', icon: 'history', ariaLabel: 'Search History' },
   ];
 
   const upperToolSet$6 = [
-    { type: 'banner', cssModifier: 'search-result', text: null }
+    { type: 'banner', cssModifier: 'search-result', text: null },
   ];
 
   const binIdx = 0;
@@ -4714,7 +4626,7 @@
       this.loadMore = templateElement('div', 'load-more', 'search-result', null, null);
       this.btnLoadMore = document.createElement('button');
       this.btnLoadMore.classList.add('btn-load-more');
-      this.btnLoadMore.textContent = `${appText.loadMore}`;
+      this.btnLoadMore.textContent = 'Load More';
       this.loadMore.appendChild(this.btnLoadMore);
       this.scroll.appendChild(this.loadMore);
 
@@ -4946,11 +4858,11 @@
   }
 
   const lowerToolSet$5 = [
-    { type: 'btn', icon: 'result', ariaLabel: `${appText.searchResult}` }
+    { type: 'btn', icon: 'result', ariaLabel: 'Search Result' },
   ];
 
   const upperToolSet$5 = [
-    { type: 'banner', cssModifier: 'search-filter', text: null }
+    { type: 'banner', cssModifier: 'search-filter', text: null },
   ];
 
   class SearchFilterView {
@@ -4977,11 +4889,11 @@
       let bookFilter = document.createElement('div');
       bookFilter.classList.add('filter', 'filter--book');
 
-      let btnUnfold = templateBtnIcon('next', 'filter-next', `${appText.unfoldBook}`);
+      let btnUnfold = templateBtnIcon('next', 'filter-next', 'Unfold Book');
       btnUnfold.dataset.bookIdx = bookIdx;
       bookFilter.appendChild(btnUnfold);
 
-      let btnFold = templateBtnIcon('down', 'filter-down', `${appText.foldBook}`);
+      let btnFold = templateBtnIcon('down', 'filter-down', 'Fold Book');
       btnFold.classList.add('btn-icon--hide');
       btnFold.dataset.bookIdx = bookIdx;
       bookFilter.appendChild(btnFold);
@@ -5068,7 +4980,7 @@
       let chapterIdx = parseInt(btnFilter.dataset.chapterIdx);
       let searchFilter = {
         bookIdx: bookIdx,
-        chapterIdx: chapterIdx
+        chapterIdx: chapterIdx,
       };
       queue.publish('search-filter.select', searchFilter);
     }
@@ -5208,12 +5120,12 @@
   }
 
   const lowerToolSet$4 = [
-    { type: 'btn', icon: 'result', ariaLabel: `${appText.searchResult}` },
-    { type: 'btn', icon: 'history-clear', ariaLabel: `${appText.clearHistory}` }
+    { type: 'btn', icon: 'result', ariaLabel: 'Search Result' },
+    { type: 'btn', icon: 'history-clear', ariaLabel: 'Clear History' },
   ];
 
   const upperToolSet$4 = [
-    { type: 'banner', cssModifier: 'search-history', text: `${appText.searchHistory}` }
+    { type: 'banner', cssModifier: 'search-history', text: 'Search History' },
   ];
 
   class SearchHistoryView {
@@ -5239,7 +5151,7 @@
       btnEntry.dataset.historyIdx = idx;
       btnEntry.textContent = query;
       entry.appendChild(btnEntry);
-      let btnDelete = templateBtnIcon('delete', 'delete', `${appText.delete}`);
+      let btnDelete = templateBtnIcon('delete', 'delete', 'Delete');
       entry.appendChild(btnDelete);
       return entry;
     }
@@ -5252,7 +5164,7 @@
 
       this.scroll = templateScroll('search-history');
       this.empty = templateElement('div', 'empty', 'search-history', null,
-        `${appText.noSearchesSaved}`);
+        'No Searches Saved');
       this.scroll.appendChild(this.empty);
 
       this.list = templateElement('div', 'list', 'search-history', null, null);
@@ -5362,18 +5274,18 @@
   }
 
   const dialogToolset = [
-    { type: 'label', text: `${appText.query}` },
-    { type: 'input', ariaLabel: `${appText.query}` },
-    { type: 'btn', cssModifier: 'search', ariaLabel: `${appText.search}` }
+    { type: 'label', text: 'Query' },
+    { type: 'input', ariaLabel: 'Query' },
+    { type: 'btn', id: 'search', ariaLabel: 'Search' },
   ];
 
   const lowerToolSet$3 = [
-    { type: 'btn', icon: 'back', ariaLabel: `${appText.back}` },
-    { type: 'btn', icon: 'result', ariaLabel: `${appText.searchResult}` }
+    { type: 'btn', icon: 'back', ariaLabel: 'Back' },
+    { type: 'btn', icon: 'result', ariaLabel: 'Search Result' },
   ];
 
   const upperToolSet$3 = [
-    { type: 'banner', cssModifier: 'search-lookup', text: `${appText.searchLookup}` }
+    { type: 'banner', cssModifier: 'search-lookup', text: 'Search Lookup' },
   ];
 
   class SearchLookupView {
@@ -5700,8 +5612,9 @@
 
   }
 
-  const validFontSizes = ['font-size--s', 'font-size--m', 'font-size--l',
-    'font-size--xl', 'font-size--xxl'
+  const validFontSizes = [
+    'font-size--s', 'font-size--m', 'font-size--l', 'font-size--xl',
+    'font-size--xxl',
   ];
 
   const fontDefault = 0;
@@ -5784,72 +5697,72 @@
       this.themes = [];
       this.themes.push({
         themeType: 'dark',
-        themeName: `${appText.jasper}`,
+        themeName: 'Jasper',
         themeClass: 'theme--jasper-dark'
       });
       this.themes.push({
         themeType: 'light',
-        themeName: `${appText.jasper}`,
+        themeName: 'Jasper',
         themeClass: 'theme--jasper-light'
       });
       this.themes.push({
         themeType: 'dark',
-        themeName: `${appText.beryl}`,
+        themeName: 'Beryl',
         themeClass: 'theme--beryl-dark'
       });
       this.themes.push({
         themeType: 'light',
-        themeName: `${appText.beryl}`,
+        themeName: 'Beryl',
         themeClass: 'theme--beryl-light'
       });
       this.themes.push({
         themeType: 'dark',
-        themeName: `${appText.emerald}`,
+        themeName: 'Emerald',
         themeClass: 'theme--emerald-dark'
       });
       this.themes.push({
         themeType: 'light',
-        themeName: `${appText.emerald}`,
+        themeName: 'Emerald',
         themeClass: 'theme--emerald-light'
       });
       this.themes.push({
         themeType: 'dark',
-        themeName: `${appText.topaz}`,
+        themeName: 'Topaz',
         themeClass: 'theme--topaz-dark'
       });
       this.themes.push({
         themeType: 'light',
-        themeName: `${appText.topaz}`,
+        themeName: 'Topaz',
         themeClass: 'theme--topaz-light'
       });
       this.themes.push({
         themeType: 'dark',
-        themeName: `${appText.sapphire}`,
+        themeName: 'Sapphire',
         themeClass: 'theme--sapphire-dark'
       });
       this.themes.push({
         themeType: 'light',
-        themeName: `${appText.sapphire}`,
+        themeName: 'Sapphire',
         themeClass: 'theme--sapphire-light'
       });
       this.themes.push({
         themeType: 'dark',
-        themeName: `${appText.amethyst}`,
+        themeName: 'Amethyst',
         themeClass: 'theme--amethyst-dark'
       });
       this.themes.push({
         themeType: 'light',
-        themeName: `${appText.amethyst}`,
+        themeName: 'Amethyst',
         themeClass: 'theme--amethyst-light'
       });
       this.themes.push({
         themeType: 'dark',
-        themeName: `${appText.chalcedony}`,
+        themeName: 'Chalcedony',
         themeClass: 'theme--chalcedony-dark'
       });
       this.themes.push({
         themeType: 'light',
-        themeName: `${appText.chalcedony}`,
+        themeName: 'Chalcedony',
         themeClass: 'theme--chalcedony-light'
       });
           queue.publish('themes.update', this.themes);
@@ -5970,25 +5883,25 @@
   }
 
   const lowerToolSet$2 = [
-    { type: 'btn', icon: 'back', ariaLabel: `${appText.back}`}
+    { type: 'btn', icon: 'back', ariaLabel: 'Back' },
   ];
 
   const upperToolSet$2 = [
-    { type: 'banner', cssModifier: 'setting', text: `${appText.setting}` }
+    { type: 'banner', cssModifier: 'setting', text: 'Setting' },
   ];
 
   const fontSize = [
-    { size: 's', ariaLabel: `${appText.small}` },
-    { size: 'm', ariaLabel: `${appText.medium}` },
-    { size: 'l', ariaLabel: `${appText.large}` },
-    { size: 'xl', ariaLabel: `${appText.extraLarge}` },
-    { size: 'xxl', ariaLabel: `${appText.extraExtraLarge}` }
+    { size: 's', ariaLabel: 'Small' },
+    { size: 'm', ariaLabel: 'Medium' },
+    { size: 'l', ariaLabel: 'Large' },
+    { size: 'xl', ariaLabel: 'Extra Large' },
+    { size: 'xxl', ariaLabel: 'Extra Extra Large' },
   ];
 
   const templateBtnFontSize = (size, label) => {
     let btnFontSize = templateElement(
       'button', 'btn-font-size', null, label, null);
-    btnFontSize.textContent = `${appText.fontSizeSample}`;
+    btnFontSize.textContent = 'Aa';
     btnFontSize.classList.add(`font-size--${size}`);
     btnFontSize.dataset.size = `font-size--${size}`;
     return btnFontSize;
@@ -6009,7 +5922,7 @@
     let heading = templateElement(
       'h1', 'header', modifier, null, name);
     divSetting.appendChild(heading);
-    let divCarousel = templateSettingCarousel('font', `${appText.font}`);
+    let divCarousel = templateSettingCarousel('font', "Font");
     divSetting.appendChild(divCarousel);
     return divSetting;
   };
@@ -6033,10 +5946,10 @@
   const templateSettingCarousel = (modifier, name) => {
     let divCarousel = templateElement(
       'div', 'carousel', modifier, null, null);
-    let btnPrev = templateBtnIcon('prev', 'prev', `${appText.previous} ${name}`);
+    let btnPrev = templateBtnIcon('prev', 'prev', `Previous ${name}`);
     let divName = templateElement(
       'div', 'name', modifier, null, null);
-    let btnNext = templateBtnIcon('next', 'next', `${appText.next} ${name}`);
+    let btnNext = templateBtnIcon('next', 'next', `Next ${name}`);
     divCarousel.appendChild(btnPrev);
     divCarousel.appendChild(divName);
     divCarousel.appendChild(btnNext);
@@ -6051,12 +5964,12 @@
     divSetting.appendChild(heading);
     let divSelector = templateElement(
       'div', 'selector', 'theme-type', null, null);
-    let btnDark = templateBtnThemeType('dark', `${appText.dark}`);
+    let btnDark = templateBtnThemeType('dark', 'Dark');
     divSelector.appendChild(btnDark);
-    let btnLight = templateBtnThemeType('light', `${appText.light}`);
+    let btnLight = templateBtnThemeType('light', 'Light');
     divSelector.appendChild(btnLight);
     divSetting.appendChild(divSelector);
-    let divCarousel = templateSettingCarousel('theme', `${appText.theme}`);
+    let divCarousel = templateSettingCarousel('theme', 'Theme');
     divSetting.appendChild(divCarousel);
     return divSetting;
   };
@@ -6086,17 +5999,17 @@
 
       this.fontSample = templateElement('div', 'font-sample', null, null, null);
       this.fontSample.innerHTML = '<p class="font-sample-verse">' +
-        `<span class="font--bold">${firstJohn419Citation} </span>` +
-        `${firstJohn419Text}</p>`;
+        '<span class="font--bold">1 John 4:19 </span>' +
+        'We love him, because he first loved us.</p>';
       this.scroll.appendChild(this.fontSample);
 
-      this.divSettingFont = templateSettingFont('font', `${appText.font}`);
+      this.divSettingFont = templateSettingFont('font', 'Font');
       this.scroll.appendChild(this.divSettingFont);
 
-      this.divSettingFontSize = templateSettingFontSize('font-size', `${appText.fontSize}`);
+      this.divSettingFontSize = templateSettingFontSize('font-size', 'Font Size');
       this.scroll.appendChild(this.divSettingFontSize);
 
-      this.divSettingTheme = templateSettingTheme('theme', `${appText.theme}`);
+      this.divSettingTheme = templateSettingTheme('theme', 'Theme');
       this.scroll.appendChild(this.divSettingTheme);
 
       this.page.appendChild(this.scroll);
@@ -6487,9 +6400,13 @@
 
   }
 
-  const validTasks = ['help-read', 'help-topic'];
-  const validTopics = ['about', 'bookmark', 'help', 'navigator', 'overview',
-    'read', 'search', 'setting', 'thats-my-king'];
+  const validTasks = [
+    'help-read', 'help-topic',
+  ];
+  const validTopics = [
+    'about', 'bookmark', 'help', 'navigator', 'overview', 'read', 'search',
+    'setting', 'thats-my-king',
+  ];
 
   class HelpModel {
 
@@ -6577,24 +6494,24 @@
   }
 
   const lowerToolSet$1 = [
-    { type: 'btn', icon: 'back', ariaLabel: `${appText.back}` },
-    { type: 'btn', icon: 'help-read', ariaLabel: `${appText.helpRead}` }
+    { type: 'btn', icon: 'back', ariaLabel: 'Back' },
+    { type: 'btn', icon: 'help-read', ariaLabel: 'Help Read' },
   ];
 
   const upperToolSet$1 = [
-    { type: 'banner', cssModifier: 'topic', text: `${appText.topic}` }
+    { type: 'banner', cssModifier: 'topic', text: 'Topic' },
   ];
 
   const helpTopicList = [
-    { topic: 'about', name: `${appText.about}` },
-    { topic: 'overview', name: `${appText.overview}` },
-    { topic: 'read', name: `${appText.read}` },
-    { topic: 'navigator', name: `${appText.navigator}` },
-    { topic: 'bookmark', name: `${appText.bookmark}` },
-    { topic: 'search', name: `${appText.search}` },
-    { topic: 'setting', name: `${appText.setting}` },
-    { topic: 'help', name: `${appText.help}` },
-    { topic: 'thats-my-king', name: `${appText.thatsMyKing}` }
+    { topic: 'about', name: 'About' },
+    { topic: 'overview', name: 'Overview' },
+    { topic: 'read', name: 'Read' },
+    { topic: 'navigator', name: 'Navigator' },
+    { topic: 'bookmark', name: 'Bookmark' },
+    { topic: 'search', name: 'Search' },
+    { topic: 'setting', name: 'Setting' },
+    { topic: 'help', name: 'Help' },
+    { topic: 'thats-my-king', name: 'That\'s MY KING!' },
   ];
 
   const templateBtnTopic = (helpTopic) => {
@@ -6703,8 +6620,8 @@
   }
 
   const lowerToolSet = [
-    { type: 'btn', icon: 'back', ariaLabel: `${appText.Back}` },
-    { type: 'btn', icon: 'help-topic', ariaLabel: `${appText.helpTopic}` }
+    { type: 'btn', icon: 'back', ariaLabel: 'Back' },
+    { type: 'btn', icon: 'help-topic', ariaLabel: 'Help Topic' },
   ];
 
   const upperToolSet = [

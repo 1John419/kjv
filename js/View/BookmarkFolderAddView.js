@@ -1,28 +1,29 @@
 'use strict';
 
-import { queue } from '../CommandQueue.js';
+import {
+  queue,
+} from '../CommandQueue.js';
 import {
   templateDivDialog,
   templateElement,
   templatePage,
   templateScroll,
   templateToolbarLower,
-  templateToolbarUpper
+  templateToolbarUpper,
 } from '../template.js';
-import { appText } from '../data/language.js'
 
 const dialogToolset = [
-  { type: 'label', text: `${appText.name}` },
-  { type: 'input', ariaLabel: `${appText.name}` },
-  { type: 'btn', cssModifier: 'save', ariaLabel: `${appText.save}` }
+  { type: 'label', text: 'Name' },
+  { type: 'input', ariaLabel: 'Name' },
+  { type: 'btn', id: 'save', ariaLabel: 'Save' },
 ];
 
 const lowerToolSet = [
-  { type: 'btn', icon: 'bookmark-folder', ariaLabel: `${appText.bookmarkFolder}` }
+  { type: 'btn', icon: 'bookmark-folder', ariaLabel: 'Bookmark Folder' },
 ];
 
 const upperToolSet = [
-  { type: 'banner', cssModifier: 'bookmark-folder-add', text: `${appText.folderAdd}` }
+  { type: 'banner', cssModifier: 'bookmark-folder-add', text: 'Folder Add' },
 ];
 
 class BookmarkFolderAddView {

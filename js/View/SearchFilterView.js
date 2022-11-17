@@ -1,16 +1,18 @@
 'use strict';
 
-import { queue } from '../CommandQueue.js';
+import {
+  queue,
+} from '../CommandQueue.js';
 import {
   templateBtnIcon,
   templateElement,
   templatePage,
   templateScroll,
   templateToolbarLower,
-  templateToolbarUpper
+  templateToolbarUpper,
 } from '../template.js';
 import {
-  removeAllChildren
+  removeAllChildren,
 } from '../util.js';
 import {
   bookBinBookIdx,
@@ -22,9 +24,8 @@ import {
   chapterBinWordCount,
   tomeBinBooks,
   tomeBinVerseCount,
-  tomeBinWordCount
+  tomeBinWordCount,
 } from '../data/binIdx.js';
-import { appText } from '../data/language.js';
 import {
   tomeBooks,
   tomeChapters,
@@ -36,11 +37,11 @@ import {
 } from '../data/tomeIdx.js';
 
 const lowerToolSet = [
-  { type: 'btn', icon: 'result', ariaLabel: `${appText.searchResult}` }
+  { type: 'btn', icon: 'result', ariaLabel: 'Search Result' },
 ];
 
 const upperToolSet = [
-  { type: 'banner', cssModifier: 'search-filter', text: null }
+  { type: 'banner', cssModifier: 'search-filter', text: null },
 ];
 
 class SearchFilterView {
@@ -67,11 +68,11 @@ class SearchFilterView {
     let bookFilter = document.createElement('div');
     bookFilter.classList.add('filter', 'filter--book');
 
-    let btnUnfold = templateBtnIcon('next', 'filter-next', `${appText.unfoldBook}`);
+    let btnUnfold = templateBtnIcon('next', 'filter-next', 'Unfold Book');
     btnUnfold.dataset.bookIdx = bookIdx;
     bookFilter.appendChild(btnUnfold);
 
-    let btnFold = templateBtnIcon('down', 'filter-down', `${appText.foldBook}`);
+    let btnFold = templateBtnIcon('down', 'filter-down', 'Fold Book');
     btnFold.classList.add('btn-icon--hide');
     btnFold.dataset.bookIdx = bookIdx;
     bookFilter.appendChild(btnFold);
@@ -158,7 +159,7 @@ class SearchFilterView {
     let chapterIdx = parseInt(btnFilter.dataset.chapterIdx);
     let searchFilter = {
       bookIdx: bookIdx,
-      chapterIdx: chapterIdx
+      chapterIdx: chapterIdx,
     };
     queue.publish('search-filter.select', searchFilter);
   }

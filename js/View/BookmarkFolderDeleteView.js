@@ -1,27 +1,27 @@
 'use strict';
 
-import { queue } from '../CommandQueue.js';
+import {
+  queue,
+} from '../CommandQueue.js';
 import {
   templateDivDialog,
   templatePage,
   templateScroll,
   templateToolbarLower,
-  templateToolbarUpper
+  templateToolbarUpper,
 } from '../template.js';
-import { appText } from '../data/language.js';
 
 const dialogToolset = [
   { type: 'label', text: null },
-  { type: 'btn', cssModifier: 'delete', ariaLabel: `${appText.delete}` }
+  { type: 'btn', id: 'delete', ariaLabel: 'Delete' },
 ];
 
 const lowerToolSet = [
-  { type: 'btn', icon: 'bookmark-folder', ariaLabel: `${appText.bookmarkFolder}` }
+  { type: 'btn', icon: 'bookmark-folder', ariaLabel: 'Bookmark Folder' },
 ];
 
 const upperToolSet = [
-  { type: 'banner', cssModifier: 'bookmark-folder-delete',
-    text: `${appText.folderDelete}` }
+  { type: 'banner', cssModifier: 'bookmark-folder-delete', text: 'Folder Delete' },
 ];
 
 class BookmarkFolderDeleteView {
@@ -125,7 +125,7 @@ class BookmarkFolderDeleteView {
   }
 
   updateLabel() {
-    this.label.innerHTML = `${appText.deleteFolder} '${this.folderName}'?`;
+    this.label.innerHTML = `Delete Folder '${this.folderName}'?`;
   }
 
 }

@@ -1,28 +1,29 @@
 'use strict';
 
-import { queue } from '../CommandQueue.js';
+import {
+  queue,
+} from '../CommandQueue.js';
 import {
   templateElement,
   templateDivDialog,
   templatePage,
   templateScroll,
   templateToolbarLower,
-  templateToolbarUpper
+  templateToolbarUpper,
 } from '../template.js';
-import { appText } from '../data/language.js'
 
 const dialogToolset = [
-  { type: 'label', text: `${appText.pasteBookmarkPackageHere}` },
-  { type: 'textarea', ariaLabel: `${appText.bookmarkPackage}` },
-  { type: 'btn', cssModifier: 'import', ariaLabel: `${appText.import}` }
+  { type: 'label', text: 'Paste Bookmark Package Here:' },
+  { type: 'textarea', ariaLabel: 'Bookmark Package' },
+  { type: 'btn', id: 'import', ariaLabel: 'Import' },
 ];
 
 const lowerToolSet = [
-  { type: 'btn', icon: 'bookmark-folder', ariaLabel: `${appText.bookmarkFolder}` }
+  { type: 'btn', icon: 'bookmark-folder', ariaLabel: 'Bookmark Folder' },
 ];
 
 const upperToolSet = [
-  { type: 'banner', cssModifier: 'bookmark-import', text: `${appText.bookmarkImport}` }
+  { type: 'banner', cssModifier: 'bookmark-import', text: 'Bookmark Import' },
 ];
 
 class BookmarkImportView {
@@ -73,7 +74,7 @@ class BookmarkImportView {
   error(message) {
     this.message.textContent = message;
     this.message.classList.remove('message--hide');
-    if (message === `${appText.importSuccessful}`) {
+    if (message === 'Import successful.') {
       this.textarea.value = '';
     }
   }

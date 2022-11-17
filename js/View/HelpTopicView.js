@@ -1,34 +1,35 @@
 'use strict';
 
-import { queue } from '../CommandQueue.js';
+import {
+  queue,
+} from '../CommandQueue.js';
 import {
   templateElement,
   templatePage,
   templateScroll,
   templateToolbarLower,
-  templateToolbarUpper
+  templateToolbarUpper,
 } from '../template.js';
-import { appText } from '../data/language.js'
 
 const lowerToolSet = [
-  { type: 'btn', icon: 'back', ariaLabel: `${appText.back}` },
-  { type: 'btn', icon: 'help-read', ariaLabel: `${appText.helpRead}` }
+  { type: 'btn', icon: 'back', ariaLabel: 'Back' },
+  { type: 'btn', icon: 'help-read', ariaLabel: 'Help Read' },
 ];
 
 const upperToolSet = [
-  { type: 'banner', cssModifier: 'topic', text: `${appText.topic}` }
+  { type: 'banner', cssModifier: 'topic', text: 'Topic' },
 ];
 
 export const helpTopicList = [
-  { topic: 'about', name: `${appText.about}` },
-  { topic: 'overview', name: `${appText.overview}` },
-  { topic: 'read', name: `${appText.read}` },
-  { topic: 'navigator', name: `${appText.navigator}` },
-  { topic: 'bookmark', name: `${appText.bookmark}` },
-  { topic: 'search', name: `${appText.search}` },
-  { topic: 'setting', name: `${appText.setting}` },
-  { topic: 'help', name: `${appText.help}` },
-  { topic: 'thats-my-king', name: `${appText.thatsMyKing}` }
+  { topic: 'about', name: 'About' },
+  { topic: 'overview', name: 'Overview' },
+  { topic: 'read', name: 'Read' },
+  { topic: 'navigator', name: 'Navigator' },
+  { topic: 'bookmark', name: 'Bookmark' },
+  { topic: 'search', name: 'Search' },
+  { topic: 'setting', name: 'Setting' },
+  { topic: 'help', name: 'Help' },
+  { topic: 'thats-my-king', name: 'That\'s MY KING!' },
 ];
 
 const templateBtnTopic = (helpTopic) => {

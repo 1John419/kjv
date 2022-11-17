@@ -1,42 +1,43 @@
 'use strict';
 
-import { queue } from '../CommandQueue.js';
+import {
+  queue,
+} from '../CommandQueue.js';
 import {
   templateAcrostic,
   templateElement,
   templateToolbarLower,
   templatePage,
   templateScroll,
-  templateToolbarUpper
+  templateToolbarUpper,
 } from '../template.js';
 import {
   centerScrollElement,
   removeAllChildren,
-  sideScrollElement
+  sideScrollElement,
 } from '../util.js';
-import { appText } from '../data/language.js';
 import {
-  tomeChapters
+  tomeChapters,
 } from '../data/tomeDb.js';
 import {
   chapterName,
   verseNum,
-  verseText
+  verseText,
 } from '../data/tomeIdx.js';
 
 const lowerToolSet = [
-  { type: 'btn', icon: 'navigator', ariaLabel: `${appText.navigator}` },
-  { type: 'btn', icon: 'bookmark', ariaLabel: `${appText.bookmark}` },
-  { type: 'btn', icon: 'search', ariaLabel: `${appText.search}` },
-  { type: 'btn', icon: 'setting', ariaLabel: `${appText.setting}` },
-  { type: 'btn', icon: 'help', ariaLabel: `${appText.help}` },
-  { type: 'btn', icon: 'column-mode', ariaLabel: `${appText.columnMode}` },
+  { type: 'btn', icon: 'navigator', ariaLabel: 'Navigator' },
+  { type: 'btn', icon: 'bookmark', ariaLabel: 'Bookmark' },
+  { type: 'btn', icon: 'search', ariaLabel: 'Search' },
+  { type: 'btn', icon: 'setting', ariaLabel: 'Setting' },
+  { type: 'btn', icon: 'help', ariaLabel: 'Help' },
+  { type: 'btn', icon: 'column-mode', ariaLabel: 'Column Mode' },
 ];
 
 const upperToolSet = [
-  { type: 'btn', icon: 'prev', ariaLabel: `${appText.previousChapter}` },
+  { type: 'btn', icon: 'prev', ariaLabel: 'Previous Chapter' },
   { type: 'banner', cssModifier: 'read', text: null },
-  { type: 'btn', icon: 'next', ariaLabel: `${appText.nextChapter}` }
+  { type: 'btn', icon: 'next', ariaLabel: 'Next Chapter' },
 ];
 
 const matthewChapterIdx = 929;

@@ -1,40 +1,37 @@
 'use strict';
 
-import { queue } from '../CommandQueue.js';
+import {
+  queue,
+} from '../CommandQueue.js';
 import {
   templateBtnIcon,
   templateElement,
   templatePage,
   templateScroll,
   templateToolbarLower,
-  templateToolbarUpper
+  templateToolbarUpper,
 } from '../template.js';
-import {
-  appText,
-  firstJohn419Citation,
-  firstJohn419Text
-} from '../data/language.js'
 
 const lowerToolSet = [
-  { type: 'btn', icon: 'back', ariaLabel: `${appText.back}`}
+  { type: 'btn', icon: 'back', ariaLabel: 'Back' },
 ];
 
 const upperToolSet = [
-  { type: 'banner', cssModifier: 'setting', text: `${appText.setting}` }
+  { type: 'banner', cssModifier: 'setting', text: 'Setting' },
 ];
 
 const fontSize = [
-  { size: 's', ariaLabel: `${appText.small}` },
-  { size: 'm', ariaLabel: `${appText.medium}` },
-  { size: 'l', ariaLabel: `${appText.large}` },
-  { size: 'xl', ariaLabel: `${appText.extraLarge}` },
-  { size: 'xxl', ariaLabel: `${appText.extraExtraLarge}` }
+  { size: 's', ariaLabel: 'Small' },
+  { size: 'm', ariaLabel: 'Medium' },
+  { size: 'l', ariaLabel: 'Large' },
+  { size: 'xl', ariaLabel: 'Extra Large' },
+  { size: 'xxl', ariaLabel: 'Extra Extra Large' },
 ];
 
 const templateBtnFontSize = (size, label) => {
   let btnFontSize = templateElement(
     'button', 'btn-font-size', null, label, null);
-  btnFontSize.textContent = `${appText.fontSizeSample}`;
+  btnFontSize.textContent = 'Aa';
   btnFontSize.classList.add(`font-size--${size}`);
   btnFontSize.dataset.size = `font-size--${size}`;
   return btnFontSize;
@@ -55,7 +52,7 @@ const templateSettingFont = (modifier, name) => {
   let heading = templateElement(
     'h1', 'header', modifier, null, name);
   divSetting.appendChild(heading);
-  let divCarousel = templateSettingCarousel('font', `${appText.font}`);
+  let divCarousel = templateSettingCarousel('font', "Font");
   divSetting.appendChild(divCarousel);
   return divSetting;
 };
@@ -79,10 +76,10 @@ const templateSettingFontSize = (modifier, name) => {
 const templateSettingCarousel = (modifier, name) => {
   let divCarousel = templateElement(
     'div', 'carousel', modifier, null, null);
-  let btnPrev = templateBtnIcon('prev', 'prev', `${appText.previous} ${name}`);
+  let btnPrev = templateBtnIcon('prev', 'prev', `Previous ${name}`);
   let divName = templateElement(
     'div', 'name', modifier, null, null);
-  let btnNext = templateBtnIcon('next', 'next', `${appText.next} ${name}`);
+  let btnNext = templateBtnIcon('next', 'next', `Next ${name}`);
   divCarousel.appendChild(btnPrev);
   divCarousel.appendChild(divName);
   divCarousel.appendChild(btnNext);
@@ -97,12 +94,12 @@ const templateSettingTheme = (modifier, name) => {
   divSetting.appendChild(heading);
   let divSelector = templateElement(
     'div', 'selector', 'theme-type', null, null);
-  let btnDark = templateBtnThemeType('dark', `${appText.dark}`);
+  let btnDark = templateBtnThemeType('dark', 'Dark');
   divSelector.appendChild(btnDark);
-  let btnLight = templateBtnThemeType('light', `${appText.light}`);
+  let btnLight = templateBtnThemeType('light', 'Light');
   divSelector.appendChild(btnLight);
   divSetting.appendChild(divSelector);
-  let divCarousel = templateSettingCarousel('theme', `${appText.theme}`);
+  let divCarousel = templateSettingCarousel('theme', 'Theme');
   divSetting.appendChild(divCarousel);
   return divSetting;
 };
@@ -132,17 +129,17 @@ class SettingView {
 
     this.fontSample = templateElement('div', 'font-sample', null, null, null);
     this.fontSample.innerHTML = '<p class="font-sample-verse">' +
-      `<span class="font--bold">${firstJohn419Citation} </span>` +
-      `${firstJohn419Text}</p>`;
+      '<span class="font--bold">1 John 4:19 </span>' +
+      'We love him, because he first loved us.</p>';
     this.scroll.appendChild(this.fontSample);
 
-    this.divSettingFont = templateSettingFont('font', `${appText.font}`);
+    this.divSettingFont = templateSettingFont('font', 'Font');
     this.scroll.appendChild(this.divSettingFont);
 
-    this.divSettingFontSize = templateSettingFontSize('font-size', `${appText.fontSize}`);
+    this.divSettingFontSize = templateSettingFontSize('font-size', 'Font Size');
     this.scroll.appendChild(this.divSettingFontSize);
 
-    this.divSettingTheme = templateSettingTheme('theme', `${appText.theme}`);
+    this.divSettingTheme = templateSettingTheme('theme', 'Theme');
     this.scroll.appendChild(this.divSettingTheme);
 
     this.page.appendChild(this.scroll);

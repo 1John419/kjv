@@ -1,6 +1,8 @@
 'use strict';
 
-import { queue } from '../CommandQueue.js';
+import {
+  queue,
+} from '../CommandQueue.js';
 import {
   templateActionMenu,
   templateElement,
@@ -8,29 +10,30 @@ import {
   templatePage,
   templateScroll,
   templateToolbarLower,
-  templateToolbarUpper
+  templateToolbarUpper,
 } from '../template.js';
-import { removeAllChildren } from '../util.js';
-import { appText } from '../data/language.js';
+import {
+  removeAllChildren,
+} from '../util.js';
 
 const actionSet = [
-  { icon: 'up', ariaLabel: `${appText.up}` },
-  { icon: 'down', ariaLabel: `${appText.down}` },
-  { icon: 'rename', ariaLabel: `${appText.rename}` },
-  { icon: 'delete', ariaLabel: `${appText.delete}` },
-  { icon: 'cancel', ariaLabel: `${appText.cancel}` }
+  { icon: 'up', ariaLabel: 'Up' },
+  { icon: 'down', ariaLabel: 'Down' },
+  { icon: 'rename', ariaLabel: 'Rename' },
+  { icon: 'delete', ariaLabel: 'Delete' },
+  { icon: 'cancel', ariaLabel: 'Cancel' },
 ];
 
 const lowerToolSet = [
-  { type: 'btn', icon: 'back', ariaLabel: `${appText.back}` },
-  { type: 'btn', icon: 'bookmark-folder-add', ariaLabel: `${appText.bookmarkFolderAdd}` },
-  { type: 'btn', icon: 'import', ariaLabel: `${appText.import}` },
-  { type: 'btn', icon: 'export', ariaLabel: `${appText.export}` },
-  { type: 'btn', icon: 'bookmark-list', ariaLabel: `${appText.bookmarkList}` }
+  { type: 'btn', icon: 'back', ariaLabel: 'Back' },
+  { type: 'btn', icon: 'bookmark-folder-add', ariaLabel: 'Bookmark Folder Add' },
+  { type: 'btn', icon: 'import', ariaLabel: 'Import' },
+  { type: 'btn', icon: 'export', ariaLabel: 'Export' },
+  { type: 'btn', icon: 'bookmark-list', ariaLabel: 'Bookmark List' },
 ];
 
 const upperToolSet = [
-  { type: 'banner', cssModifier: 'bookmark-folder', text: `${appText.bookmarkFolder}` }
+  { type: 'banner', cssModifier: 'bookmark-folder', text: 'Bookmark Folder' },
 ];
 
 class BookmarkFolderView {
@@ -80,7 +83,7 @@ class BookmarkFolderView {
     let btnEntry = document.createElement('button');
     btnEntry.classList.add('btn-entry', 'btn-entry--folder');
     btnEntry.textContent = folderName;
-    let btnMenu = templateBtnIcon('h-menu', 'h-menu', `${appText.menu}`);
+    let btnMenu = templateBtnIcon('h-menu', 'h-menu', 'Menu');
     entry.appendChild(btnEntry);
     entry.appendChild(btnMenu);
     return entry;

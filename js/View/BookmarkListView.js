@@ -1,6 +1,8 @@
 'use strict';
 
-import { queue } from '../CommandQueue.js';
+import {
+  queue,
+} from '../CommandQueue.js';
 import {
   templateActionMenu,
   templateAcrostic,
@@ -9,30 +11,33 @@ import {
   templatePage,
   templateScroll,
   templateToolbarLower,
-  templateToolbarUpper
+  templateToolbarUpper,
 } from '../template.js';
-import { removeAllChildren } from '../util.js';
-import { appText } from '../data/language.js';
-import { citationByVerseIdx } from '../data/tomeDb.js';
+import {
+  removeAllChildren,
+} from '../util.js';
+import {
+  citationByVerseIdx,
+} from '../data/tomeDb.js';
 import {
   verseCitation,
-  verseText
+  verseText,
 } from '../data/tomeIdx.js';
 
 const actionSet = [
-  { icon: 'up', ariaLabel: `${appText.up}` },
-  { icon: 'down', ariaLabel: `${appText.down}` },
-  { icon: 'move-copy', ariaLabel: `${appText.moveCopy}` },
-  { icon: 'delete', ariaLabel: `${appText.delete}` },
-  { icon: 'cancel', ariaLabel: `${appText.cancel}` }
+  { icon: 'up', ariaLabel: 'Up' },
+  { icon: 'down', ariaLabel: 'Down' },
+  { icon: 'move-copy', ariaLabel: 'Move/Copy' },
+  { icon: 'delete', ariaLabel: 'Delete' },
+  { icon: 'cancel', ariaLabel: 'Cancel' },
 ];
 
 const lowerToolSet = [
-  { type: 'btn', icon: 'back', ariaLabel: `${appText.back}` },
-  { type: 'btn', icon: 'sort-ascend', ariaLabel: `${appText.sortAscending}` },
-  { type: 'btn', icon: 'sort-invert', ariaLabel: `${appText.sortInvert}` },
-  { type: 'btn', icon: 'bookmark-folder', ariaLabel: `${appText.bookmarkFolder}` },
-  { type: 'btn', icon: 'expand-mode', ariaLabel: `${appText.expandBookmarks}` },
+  { type: 'btn', icon: 'back', ariaLabel: 'Back' },
+  { type: 'btn', icon: 'sort-ascend', ariaLabel: 'Sort Ascending' },
+  { type: 'btn', icon: 'sort-invert', ariaLabel: 'Sort Invert' },
+  { type: 'btn', icon: 'bookmark-folder', ariaLabel: 'Bookmark Folder' },
+  { type: 'btn', icon: 'expand-mode', ariaLabel: 'Expand Bookmarks' },
 ];
 
 const upperToolSet = [
@@ -86,7 +91,7 @@ class BookmarkListView {
     btnRef.textContent = citationByVerseIdx(verseIdx);
     btnRef.dataset.verseIdx = verseIdx;
     entry.appendChild(btnRef);
-    let btnMenu = templateBtnIcon('h-menu', 'h-menu', `${appText.menu}`);
+    let btnMenu = templateBtnIcon('h-menu', 'h-menu', 'Menu');
     entry.appendChild(btnMenu);
     return entry;
   }
@@ -100,7 +105,7 @@ class BookmarkListView {
     this.scroll = templateScroll('bookmark-list');
 
     this.empty = templateElement('div', 'empty', 'bookmark-list', null,
-      `${appText.noBookmarksSaved}`);
+      'No bookmarks saved.');
     this.scroll.appendChild(this.empty);
 
     this.list = templateElement('div', 'list', 'bookmark-list', null, null);

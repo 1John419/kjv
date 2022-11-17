@@ -1,20 +1,24 @@
 'use strict';
 
-import { queue } from '../CommandQueue.js';
+import {
+  queue,
+} from '../CommandQueue.js';
 import {
   tomeChapters,
-  tomeDb
+  tomeDb,
 } from '../data/tomeDb.js';
 import {
   chapterBookIdx,
   chapterFirstVerseIdx,
-  chapterLastVerseIdx
+  chapterLastVerseIdx,
 } from '../data/tomeIdx.js';
 import {
-  range
+  range,
 } from '../util.js';
 
-const validTasks = ['navigator-book', 'navigator-chapter'];
+const validTasks = [
+  'navigator-book', 'navigator-chapter',
+];
 
 const CHAPTER_IDX_GENESIS_1 = 0;
 

@@ -1,24 +1,27 @@
 'use strict';
 
-import { queue } from '../CommandQueue.js';
+import {
+  queue,
+} from '../CommandQueue.js';
 import {
   templateBtnIcon,
   templateElement,
   templatePage,
   templateScroll,
   templateToolbarLower,
-  templateToolbarUpper
+  templateToolbarUpper,
 } from '../template.js';
-import { removeAllChildren } from '../util.js';
-import { appText } from '../data/language.js';
+import {
+  removeAllChildren,
+} from '../util.js';
 
 const lowerToolSet = [
-  { type: 'btn', icon: 'result', ariaLabel: `${appText.searchResult}` },
-  { type: 'btn', icon: 'history-clear', ariaLabel: `${appText.clearHistory}` }
+  { type: 'btn', icon: 'result', ariaLabel: 'Search Result' },
+  { type: 'btn', icon: 'history-clear', ariaLabel: 'Clear History' },
 ];
 
 const upperToolSet = [
-  { type: 'banner', cssModifier: 'search-history', text: `${appText.searchHistory}` }
+  { type: 'banner', cssModifier: 'search-history', text: 'Search History' },
 ];
 
 class SearchHistoryView {
@@ -44,7 +47,7 @@ class SearchHistoryView {
     btnEntry.dataset.historyIdx = idx;
     btnEntry.textContent = query;
     entry.appendChild(btnEntry);
-    let btnDelete = templateBtnIcon('delete', 'delete', `${appText.delete}`);
+    let btnDelete = templateBtnIcon('delete', 'delete', 'Delete');
     entry.appendChild(btnDelete);
     return entry;
   }
@@ -57,7 +60,7 @@ class SearchHistoryView {
 
     this.scroll = templateScroll('search-history');
     this.empty = templateElement('div', 'empty', 'search-history', null,
-      `${appText.noSearchesSaved}`);
+      'No Searches Saved');
     this.scroll.appendChild(this.empty);
 
     this.list = templateElement('div', 'list', 'search-history', null, null);

@@ -1,15 +1,26 @@
 'use strict';
 
-import { queue } from '../CommandQueue.js';
-import { SearchEngine } from '../SearchEngine.js';
-import { tomeBinVerses } from '../data/binIdx.js';
-import { appText, defaultQuery } from '../data/language.js';
-import { tomeDb } from '../data/tomeDb.js';
+import {
+  queue,
+} from '../CommandQueue.js';
+import {
+  SearchEngine,
+} from '../SearchEngine.js';
+import {
+  tomeBinVerses,
+} from '../data/binIdx.js';
+import {
+  tomeDb,
+} from '../data/tomeDb.js';
 
-const searchResultReroute = ['search-filter', 'search-history'];
-const validTasks = ['search-result', 'search-lookup', 'search-filter',
-  'search-history'
+const searchResultReroute = [
+  'search-filter', 'search-history',
 ];
+const validTasks = [
+  'search-result', 'search-lookup', 'search-filter', 'search-history',
+];
+
+const DEFAULT_QUERY = 'day of the lord';
 
 class SearchModel {
 
@@ -73,9 +84,9 @@ class SearchModel {
     if (rig.state === 'ERROR') {
       let message;
       if (rig.type === 'EMPTY') {
-        message = `${appText.enterSearchExpression}`;
+        message = 'Enter a search expression.';
       } else if (rig.type === 'INVALID') {
-        message = `${appText.invalidQueryExpression}`;
+        message = 'Invalid query expression.';
       } else if (rig.wordStatus !== 'OK') {
         message = rig.wordStatus;
       }
@@ -145,6 +156,7 @@ class SearchModel {
   }
 
   async restoreQuery() {
+    let defaultQuery = DEFAULT_QUERY;
     let searchQuery = localStorage.getItem('searchQuery');
     if (!searchQuery) {
       searchQuery = defaultQuery;
@@ -230,7 +242,7 @@ class SearchModel {
   tomeFilter() {
     return {
       bookIdx: -1,
-      chapterIdx: -1
+      chapterIdx: -1,
     };
   }
 

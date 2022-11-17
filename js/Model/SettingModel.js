@@ -1,10 +1,12 @@
 'use strict';
 
-import { queue } from '../CommandQueue.js';
-import { appText } from '../data/language.js';
+import {
+  queue,
+} from '../CommandQueue.js';
 
-const validFontSizes = ['font-size--s', 'font-size--m', 'font-size--l',
-  'font-size--xl', 'font-size--xxl'
+const validFontSizes = [
+  'font-size--s', 'font-size--m', 'font-size--l', 'font-size--xl',
+  'font-size--xxl',
 ];
 
 const fontDefault = 0;
@@ -87,72 +89,72 @@ class SettingModel {
     this.themes = [];
     this.themes.push({
       themeType: 'dark',
-      themeName: `${appText.jasper}`,
+      themeName: 'Jasper',
       themeClass: 'theme--jasper-dark'
     });
     this.themes.push({
       themeType: 'light',
-      themeName: `${appText.jasper}`,
+      themeName: 'Jasper',
       themeClass: 'theme--jasper-light'
     });
     this.themes.push({
       themeType: 'dark',
-      themeName: `${appText.beryl}`,
+      themeName: 'Beryl',
       themeClass: 'theme--beryl-dark'
     });
     this.themes.push({
       themeType: 'light',
-      themeName: `${appText.beryl}`,
+      themeName: 'Beryl',
       themeClass: 'theme--beryl-light'
     });
     this.themes.push({
       themeType: 'dark',
-      themeName: `${appText.emerald}`,
+      themeName: 'Emerald',
       themeClass: 'theme--emerald-dark'
     });
     this.themes.push({
       themeType: 'light',
-      themeName: `${appText.emerald}`,
+      themeName: 'Emerald',
       themeClass: 'theme--emerald-light'
     });
     this.themes.push({
       themeType: 'dark',
-      themeName: `${appText.topaz}`,
+      themeName: 'Topaz',
       themeClass: 'theme--topaz-dark'
     });
     this.themes.push({
       themeType: 'light',
-      themeName: `${appText.topaz}`,
+      themeName: 'Topaz',
       themeClass: 'theme--topaz-light'
     });
     this.themes.push({
       themeType: 'dark',
-      themeName: `${appText.sapphire}`,
+      themeName: 'Sapphire',
       themeClass: 'theme--sapphire-dark'
     });
     this.themes.push({
       themeType: 'light',
-      themeName: `${appText.sapphire}`,
+      themeName: 'Sapphire',
       themeClass: 'theme--sapphire-light'
     });
     this.themes.push({
       themeType: 'dark',
-      themeName: `${appText.amethyst}`,
+      themeName: 'Amethyst',
       themeClass: 'theme--amethyst-dark'
     });
     this.themes.push({
       themeType: 'light',
-      themeName: `${appText.amethyst}`,
+      themeName: 'Amethyst',
       themeClass: 'theme--amethyst-light'
     });
     this.themes.push({
       themeType: 'dark',
-      themeName: `${appText.chalcedony}`,
+      themeName: 'Chalcedony',
       themeClass: 'theme--chalcedony-dark'
     });
     this.themes.push({
       themeType: 'light',
-      themeName: `${appText.chalcedony}`,
+      themeName: 'Chalcedony',
       themeClass: 'theme--chalcedony-light'
     });
         queue.publish('themes.update', this.themes);
