@@ -3063,7 +3063,7 @@
   const dialogToolset$5 = [
     { type: 'label', text: 'Name' },
     { type: 'input', ariaLabel: 'Name' },
-    { type: 'btn', id: 'save', ariaLabel: 'Save' },
+    { type: 'btn', cssModifier: 'save', ariaLabel: 'Save' },
   ];
 
   const lowerToolSet$b = [
@@ -3196,7 +3196,7 @@
 
   const dialogToolset$4 = [
     { type: 'label', text: null },
-    { type: 'btn', id: 'delete', ariaLabel: 'Delete' },
+    { type: 'btn', cssModifier: 'delete', ariaLabel: 'Delete' },
   ];
 
   const lowerToolSet$a = [
@@ -3316,7 +3316,7 @@
   const dialogToolset$3 = [
     { type: 'label', text: 'Folder Name' },
     { type: 'input', ariaLabel: 'Name' },
-    { type: 'btn', id: 'save', ariaLabel: 'Save' },
+    { type: 'btn', cssModifier: 'save', ariaLabel: 'Save' },
   ];
 
   const lowerToolSet$9 = [
@@ -3568,7 +3568,7 @@
   const dialogToolset$1 = [
     { type: 'label', text: 'Paste Bookmark Package Here:' },
     { type: 'textarea', ariaLabel: 'Bookmark Package' },
-    { type: 'btn', id: 'import', ariaLabel: 'Import' },
+    { type: 'btn', cssModifier: 'import', ariaLabel: 'Import' },
   ];
 
   const lowerToolSet$7 = [
@@ -5276,7 +5276,7 @@
   const dialogToolset = [
     { type: 'label', text: 'Query' },
     { type: 'input', ariaLabel: 'Query' },
-    { type: 'btn', id: 'search', ariaLabel: 'Search' },
+    { type: 'btn', cssModifier: 'search', ariaLabel: 'Search' },
   ];
 
   const lowerToolSet$3 = [
