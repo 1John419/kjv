@@ -1,13 +1,9 @@
 'use strict';
 
-import {
-  queue,
-} from '../CommandQueue.js';
-import {
-  tomeDb,
-  tomeName,
-  tomeVerseCount,
-} from '../data/tomeDb.js';
+import { queue } from '../CommandQueue.js';
+import { kjvLists } from '../data/kjvLists.js';
+import { kjvVerseCount } from '../data/kjvPureDb.js';
+import { kjvDb } from '../Model/DbModel.js';
 
 const numSortAscend = (a, b) => a - b;
 
@@ -37,7 +33,7 @@ class BookmarkModel {
   }
 
   async add(verseIdx) {
-    let bookmarks = this.activeFolder.bookmarks;
+    const bookmarks = this.activeFolder.bookmarks;
     if (bookmarks.indexOf(verseIdx) === -1) {
       this.activeFolder.bookmarks = [verseIdx, ...bookmarks];
       this.updateFolders();
@@ -46,7 +42,7 @@ class BookmarkModel {
   }
 
   copy(copyPkg) {
-    let toFolder = this.getFolder(copyPkg.to);
+    const toFolder = this.getFolder(copyPkg.to);
     toFolder.bookmarks.push(copyPkg.verseIdx);
     this.updateFolders();
   }
@@ -63,8 +59,8 @@ class BookmarkModel {
   }
 
   async delete(verseIdx) {
-    let bookmarks = this.activeFolder.bookmarks;
-    let index = bookmarks.indexOf(verseIdx);
+    const bookmarks = this.activeFolder.bookmarks;
+    const index = bookmarks.indexOf(verseIdx);
     if (index !== -1) {
       bookmarks.splice(index, 1);
       this.updateFolders();
@@ -73,8 +69,8 @@ class BookmarkModel {
   }
 
   async down(verseIdx) {
-    let bookmarks = this.activeFolder.bookmarks;
-    let index = bookmarks.indexOf(verseIdx);
+    const bookmarks = this.activeFolder.bookmarks;
+    const index = bookmarks.indexOf(verseIdx);
     if (index !== bookmarks.length - 1 && index !== -1) {
       this.reorderBookmarks(index, index + 1);
       this.updateFolders();
@@ -107,19 +103,19 @@ class BookmarkModel {
   }
 
   async folderDelete(folderName) {
-    let idx = this.getFolderIdx(folderName);
+    const idx = this.getFolderIdx(folderName);
     this.folders.splice(idx, 1);
     if (this.folders.length === 0) {
       await this.folderAdd('Default');
     }
     this.updateFolders();
-    let firstFolderName = this.folders[firstEntry].name;
+    const firstFolderName = this.folders[firstEntry].name;
     await this.activeFolderChange(firstFolderName);
     this.updateFolderList();
   }
 
   folderDown(folderName) {
-    let index = this.folders.findIndex((folder) => folder.name === folderName);
+    const index = this.folders.findIndex((folder) => folder.name === folderName);
     if (index !== this.folders.length - 1 && index !== -1) {
       this.reorderFolders(index, index + 1);
       this.updateFolders();
@@ -128,7 +124,7 @@ class BookmarkModel {
   }
 
   folderImport(pkgStr) {
-    let bookmarkPkg = this.getBookmarkPkg(pkgStr);
+    const bookmarkPkg = this.getBookmarkPkg(pkgStr);
     if (!bookmarkPkg) {
       queue.publish('bookmark-import.message', 'Invalid JSON String');
     } else {
@@ -154,7 +150,7 @@ class BookmarkModel {
     if (namePkg.old === namePkg.new) {
       queue.publish('bookmark.folder.rename.error', 'Duplicate Folder Name');
     } else {
-      let oldFolder = this.getFolder(namePkg.old);
+      const oldFolder = this.getFolder(namePkg.old);
       oldFolder.name = namePkg.new;
       this.updateFolders();
       this.updateFolderList();
@@ -201,7 +197,7 @@ class BookmarkModel {
   }
 
   folderUp(folderName) {
-    let index = this.folders.findIndex((folder) => folder.name === folderName);
+    const index = this.folders.findIndex((folder) => folder.name === folderName);
     if (index !== 0 && index !== -1) {
       this.reorderFolders(index, index - 1);
       this.updateFolders();
@@ -236,14 +232,14 @@ class BookmarkModel {
   }
 
   importPkg(bookmarkPkg) {
-    for (let folder of bookmarkPkg.folders) {
+    for (const folder of bookmarkPkg.folders) {
       let targetFolder = this.getFolder(folder.name);
       if (!targetFolder) {
         targetFolder = this.createFolder(folder.name);
         this.folders.push(targetFolder);
       }
-      for (let verseIdx of folder.bookmarks) {
-        let bookmarks = targetFolder.bookmarks;
+      for (const verseIdx of folder.bookmarks) {
+        const bookmarks = targetFolder.bookmarks;
         if (bookmarks.indexOf(verseIdx) !== -1) {
           continue;
         }
@@ -252,20 +248,21 @@ class BookmarkModel {
     }
     this.updateFolders();
     this.updateFolderList();
+    this.updateActiveFolder();
     queue.publish('bookmark-import.message', 'Import Successful');
   }
 
   initialize() {
-    this.maxIdx = tomeVerseCount - 1;
+    this.maxIdx = kjvVerseCount - 1;
     this.subscribe();
   }
 
   async move(movePkg) {
-    let toFolder = this.getFolder(movePkg.to);
+    const toFolder = this.getFolder(movePkg.to);
     toFolder.bookmarks.push(movePkg.verseIdx);
 
-    let bookmarks = this.activeFolder.bookmarks;
-    let index = bookmarks.indexOf(movePkg.verseIdx);
+    const bookmarks = this.activeFolder.bookmarks;
+    const index = bookmarks.indexOf(movePkg.verseIdx);
     if (index !== -1) {
       bookmarks.splice(index, 1);
       this.updateFolders();
@@ -274,28 +271,24 @@ class BookmarkModel {
   }
 
   async moveCopyChange(verseIdx) {
-    this.moveCopyVerseObj = await tomeDb.verses.get(verseIdx);
+    this.moveCopyVerseObj = await kjvDb.verses.get(verseIdx);
     queue.publish('bookmark.move-copy.update', this.moveCopyVerseObj);
   }
 
   moveCopyListChange(verseIdx) {
-    let foldersNotFoundIn = this.folders.filter(
-      (folder) => !folder.bookmarks.some((element) => element === verseIdx)
-    );
-    let moveCopyList = foldersNotFoundIn.map((folder) => folder.name);
+    const foldersNotFoundIn = this.folders.filter((folder) => !folder.bookmarks.some((element) => element === verseIdx));
+    const moveCopyList = foldersNotFoundIn.map((folder) => folder.name);
     queue.publish('bookmark-move-copy.list.update', moveCopyList);
   }
 
   reorderBookmarks(fromIdx, toIdx) {
-    let bookmarks = this.activeFolder.bookmarks;
-    bookmarks.splice(
-      toIdx, 0, bookmarks.splice(fromIdx, 1)[firstEntry]
+    const bookmarks = this.activeFolder.bookmarks;
+    bookmarks.splice(toIdx, 0, bookmarks.splice(fromIdx, 1)[firstEntry]
     );
   }
 
   reorderFolders(fromIdx, toIdx) {
-    this.folders.splice(
-      toIdx, 0, this.folders.splice(fromIdx, 1)[firstEntry]
+    this.folders.splice(toIdx, 0, this.folders.splice(fromIdx, 1)[firstEntry]
     );
   }
 
@@ -307,7 +300,7 @@ class BookmarkModel {
   }
 
   async restoreActiveFolderName() {
-    let defaultFolderName = 'Default';
+    const defaultFolderName = 'Default';
     let activeFolderName =
       localStorage.getItem('activeFolderName');
     if (!activeFolderName) {
@@ -326,7 +319,7 @@ class BookmarkModel {
   }
 
   restoreExpandMode() {
-    let defaultMode = false;
+    const defaultMode = false;
     let expandMode = localStorage.getItem('bookmarkExpandMode');
     if (!expandMode) {
       expandMode = defaultMode;
@@ -344,7 +337,7 @@ class BookmarkModel {
   }
 
   restoreFolders() {
-    let defaultFolders = this.createFolders();
+    const defaultFolders = this.createFolders();
     let folders = localStorage.getItem('folders');
     if (!folders) {
       folders = defaultFolders;
@@ -364,7 +357,7 @@ class BookmarkModel {
   }
 
   restoreTask() {
-    let defaultTask = 'bookmark-list';
+    const defaultTask = 'bookmark-list';
     let bookmarkTask = localStorage.getItem('bookmarkTask');
     if (!bookmarkTask) {
       bookmarkTask = defaultTask;
@@ -405,7 +398,7 @@ class BookmarkModel {
   }
 
   async sort(sorter) {
-    let bookmarks = this.activeFolder.bookmarks;
+    const bookmarks = this.activeFolder.bookmarks;
     if (bookmarks.length !== 0) {
       bookmarks.sort(sorter);
       this.updateFolders();
@@ -414,7 +407,7 @@ class BookmarkModel {
   }
 
   async sortInvert() {
-    let bookmarks = this.activeFolder.bookmarks;
+    const bookmarks = this.activeFolder.bookmarks;
     bookmarks.reverse();
     this.updateFolders();
     await this.updateActiveFolder(this.activeFolderName);
@@ -491,8 +484,8 @@ class BookmarkModel {
   }
 
   async up(verseIdx) {
-    let bookmarks = this.activeFolder.bookmarks;
-    let index = bookmarks.indexOf(verseIdx);
+    const bookmarks = this.activeFolder.bookmarks;
+    const index = bookmarks.indexOf(verseIdx);
     if (index !== 0 && index !== -1) {
       this.reorderBookmarks(index, index - 1);
       this.updateFolders();
@@ -502,8 +495,7 @@ class BookmarkModel {
 
   async updateActiveFolder() {
     this.activeFolder = this.getFolder(this.activeFolderName);
-    this.activeFolder.verseObjs = await tomeDb.verses.bulkGet(
-      this.activeFolder.bookmarks);
+    this.activeFolder.verseObjs = await kjvDb.verses.bulkGet(this.activeFolder.bookmarks);
     queue.publish('bookmark.active-folder.update', this.activeFolder);
   }
 
@@ -529,8 +521,8 @@ class BookmarkModel {
     ) {
       status = 'Invalid Package Structure';
     }
-    if (bookmarkPkg.tome !== tomeName) {
-      status = 'Tome Mismatch';
+    if (bookmarkPkg.tome !== kjvLists.name) {
+      status = 'KJV Mismatch';
     }
     return status;
   }
