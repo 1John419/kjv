@@ -3,8 +3,8 @@
 import { queue } from '../CommandQueue.js';
 import { template } from '../template.js';
 import { util } from '../util.js';
-import { kjvIdx } from '../data/kjvIdx.js';
-import { kjvLists } from '../data/kjvLists.js';
+import { tomeIdx } from '../data/tomeIdx.js';
+import { tomeLists } from '../data/tomeLists.js';
 
 const lowerToolSet = [
   { type: 'btn', icon: 'navigator', ariaLabel: null },
@@ -83,13 +83,13 @@ class ReadView {
     if (acrostic) {
       verse.appendChild(acrostic);
     }
-    const text = template.element('span', 'verse-text', null, null, verseObj.v[kjvIdx.verse.text]);
+    const text = template.element('span', 'verse-text', null, null, verseObj.v[tomeIdx.verse.text]);
     verse.appendChild(text);
     return verse;
   }
 
   buildVerseNum(verseObj) {
-    const num = template.element('span', 'verse-num', null, null, verseObj.v[kjvIdx.verse.num] + ' ');
+    const num = template.element('span', 'verse-num', null, null, verseObj.v[tomeIdx.verse.num] + ' ');
     return num;
   }
 
@@ -404,7 +404,7 @@ class ReadView {
   }
 
   updateBanner() {
-    this.btnBanner.textContent = kjvLists.chapters[this.chapterIdx][kjvIdx.chapter.name];
+    this.btnBanner.textContent = tomeLists.chapters[this.chapterIdx][tomeIdx.chapter.name];
   }
 
   updateColumnMode() {

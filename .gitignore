@@ -1,4 +1,5 @@
 /.gitignore
+/.nojekyll
 /.vscode
 /ref
-/test
+/seTest

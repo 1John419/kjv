@@ -2,7 +2,7 @@
 
 const appCaches = [
   {
-    name: 'core-20240512.02',
+    name: 'core-20240516.01',
     urls: [
       '/',
       '/bundle.js',
@@ -38,7 +38,7 @@ const appCaches = [
     ]
   },
   {
-    name: 'help-20240512.01',
+    name: 'help-20240516.01',
     urls: [
       '/help/bookmark.html',
       '/help/clipboard-mode.html',
@@ -60,8 +60,9 @@ const appCaches = [
     ]
   },
   {
-    name: 'png-20240512.01',
+    name: 'png-20240516.01',
     urls: [
+      '/png/icon-032.png',
       '/png/icon-192.png',
       '/png/icon-512.png',
       '/png/maskable-icon-192.png',
@@ -69,7 +70,7 @@ const appCaches = [
     ],
   },
   {
-    name: 'webp-20240512.01',
+    name: 'webp-20240516.01',
     urls: [
       '/webp/android.webp',
       '/webp/desktop.webp',

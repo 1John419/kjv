@@ -1,11 +1,11 @@
 'use strict';
 
 import { queue } from '../CommandQueue.js';
-import { kjvPureDb, kjvPureName, kjvPureWords } from '../data/kjvPureDb.js';
+import { kjvPureDb, kjvPureVerseCount, kjvPureWords } from '../data/kjvPureDb.js';
 
-export let kjvDb = null;
-export let kjvWords = null;
-export let kjvName = null;
+export let tomeDb = null;
+export let tomeVerseCount = null;
+export let tomeWords = null;
 
 class DbModel {
 
@@ -18,9 +18,9 @@ class DbModel {
   }
 
   restore() {
-    kjvDb = kjvPureDb;
-    kjvWords = kjvPureWords;
-    kjvName = kjvPureName;
+    tomeDb = kjvPureDb;
+    tomeVerseCount = kjvPureVerseCount;
+    tomeWords = kjvPureWords;
   }
 
   subscribe() {

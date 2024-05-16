@@ -3,7 +3,7 @@
 import { queue } from '../CommandQueue.js';
 import { SearchEngine } from '../SearchEngine.js';
 import { binIdx } from '../data/binIdx.js';
-import { kjvDb } from '../Model/DbModel.js';
+import { tomeDb } from '../Model/DbModel.js';
 
 const searchResultReroute = [
   'search-filter', 'search-history',
@@ -98,7 +98,7 @@ class SearchModel {
   }
 
   resetFilter() {
-    const filter = this.kjvFilter();
+    const filter = this.tomeFilter();
     this.filterChange(filter);
   }
 
@@ -110,7 +110,7 @@ class SearchModel {
   }
 
   restoreFilter() {
-    const defaultFilter = this.kjvFilter();
+    const defaultFilter = this.tomeFilter();
     let searchFilter = localStorage.getItem('searchFilter');
     if (!searchFilter) {
       searchFilter = defaultFilter;
@@ -233,7 +233,7 @@ class SearchModel {
     queue.publish('search.task.update', this.searchTask);
   }
 
-  kjvFilter() {
+  tomeFilter() {
     return {
       bookIdx: -1,
       chapterIdx: -1,
@@ -249,7 +249,7 @@ class SearchModel {
     if (this.rig === null) {
       return;
     }
-    this.searchVerseObjs = await kjvDb.verses.bulkGet(this.rig.kjvBin[binIdx.kjvBinIdx.verses]);
+    this.searchVerseObjs = await tomeDb.verses.bulkGet(this.rig.tomeBin[binIdx.tomeBinIdx.verses]);
     queue.publish('search.verse-objs.update', this.searchVerseObjs);
   }
 

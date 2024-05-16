@@ -45,7 +45,7 @@
     {
       "form_factor": "wide",
       "label": "Desktop Screenshot",
-      "sizes": "816x960",
+      "sizes": "775x1013",
       "src": "/webp/desktop.webp",
       "type": "image/webp"
       }
