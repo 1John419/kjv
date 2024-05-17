@@ -259,7 +259,7 @@
   const initializeTomeLists = async () => {
     progress('loading kja lists...');
     tomeLists = await dbUtil.fetchJson(url);
-    tomeLists.tomeName = 'kjv';
+    tomeLists.tomeName = 'KJV';
   };
 
   class ReadModel {
@@ -1050,12 +1050,12 @@
           this.updatePanes();
         }
       });
-      mqlTwoPanes.addEventListener('change',  (event) => {
+      mqlTwoPanes.addEventListener('change', (event) => {
         if (event.matches) {
           this.updatePanes();
         }
       });
-      mqlThreePanes.addEventListener('change',  (event) => {
+      mqlThreePanes.addEventListener('change', (event) => {
         if (event.matches) {
           this.updatePanes();
         }
@@ -1073,7 +1073,7 @@
         this.panes = 2;
       } else if (mqlThreePanes.matches) {
         this.panes = 3;
-      } 
+      }
       queue.publish('panes.change', this.panes);
     }
 

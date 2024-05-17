@@ -83,12 +83,12 @@ class ReadController {
         this.updatePanes();
       }
     });
-    mqlTwoPanes.addEventListener('change',  (event) => {
+    mqlTwoPanes.addEventListener('change', (event) => {
       if (event.matches) {
         this.updatePanes();
       }
     });
-    mqlThreePanes.addEventListener('change',  (event) => {
+    mqlThreePanes.addEventListener('change', (event) => {
       if (event.matches) {
         this.updatePanes();
       }
@@ -106,7 +106,7 @@ class ReadController {
       this.panes = 2;
     } else if (mqlThreePanes.matches) {
       this.panes = 3;
-    } 
+    }
     queue.publish('panes.change', this.panes);
   }
 
