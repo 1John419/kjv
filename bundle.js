@@ -1340,7 +1340,7 @@
       const btn = document.createElement('div');
       btn.classList.add('btn-book');
       btn.dataset.bookIdx = bookIdx;
-      btn.textContent = tomeLists.books[bookIdx][tomeIdx.book.longName];
+      btn.textContent = tomeLists.books[bookIdx][tomeIdx.book.shortName];
       return btn;
     }
 
