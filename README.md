@@ -21,12 +21,12 @@ It should also support the latest version of the Safari browser, but has not bee
 
 ### Download
 
-`kjv.1-john-419.org`
+<https://kjv.1-john-419.org>
 
 ### Contact
 
-`github.1john419@gmail.com`
+<github.1john419@gmail.com>
 
 ### Website
 
-`1-john-419.org`
+<https://1-john-419.org>
