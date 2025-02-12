@@ -19,7 +19,7 @@ export const firstVerseIdxByChapterIdx = (chapterIdx) => {
 };
 
 export const initializeTomeLists = async () => {
-  progress('loading kja lists...');
+  progress('loading kjv lists...');
   tomeLists = await dbUtil.fetchJson(url);
   tomeLists.tomeName = 'kjv';
 };
