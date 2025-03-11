@@ -1,6 +1,6 @@
 {
   "background_color": "transparent",
-  "description": "KJV Bible Search",
+  "description": "KJV - King James",
   "dir": "ltr",
   "display": "standalone",
   "icons": [
@@ -31,7 +31,7 @@
   ],
   "id": "/",
   "lang": "en",
-  "name": "KJV Bible Search",
+  "name": "KJV - King James",
   "orientation": "any",
   "scope": "/",
   "screenshots": [

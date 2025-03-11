@@ -2,7 +2,7 @@
 
 const appCaches = [
   {
-    name: 'core-20250211.01',
+    name: 'core-20250311.01',
     urls: [
       '/',
       '/bundle.js',
@@ -17,28 +17,28 @@ const appCaches = [
     ]
   },
   {
-    name: 'css-20240512.01',
+    name: 'css-20250311.01',
     urls: [
       '/css/kjv.css',
       '/css/font.css',
     ]
   },
   {
-    name: 'font-20240512.01',
+    name: 'font-20250311.01',
     urls: [
       '/font/courgette-v17-latin-regular.woff2',
       '/font/inconsolata-v32-latin-regular.woff2',
       '/font/merienda-v19-latin-regular.woff2',
-      '/font/merriweather-v30-latin-regular.woff2',
-      '/font/noto-serif-hebrew-v25-latin-regular.woff2',
+      '/font/merriweather-v31-latin-regular.woff2',
+      '/font/noto-serif-hebrew-v28-latin-regular.woff2',
       '/font/open-sans-v40-latin-regular.woff2',
       '/font/roboto-mono-v23-latin-regular.woff2',
       '/font/roboto-slab-v34-latin-regular.woff2',
-      '/font/roboto-v30-latin-regular.woff2',
+      '/font/roboto-v47-latin-regular.woff2',
     ]
   },
   {
-    name: 'help-20240516.02',
+    name: 'help-20250311.01',
     urls: [
       '/help/bookmark.html',
       '/help/clipboard-mode.html',
@@ -48,8 +48,6 @@ const appCaches = [
       '/help/read.html',
       '/help/search.html',
       '/help/setting.html',
-      '/help/thats-my-king.html',
-      '/help/the-acts-of-peter.html',
     ]
   },
   {
