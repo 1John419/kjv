@@ -1,7 +1,8 @@
 'use strict';
 
 import { queue } from '../CommandQueue.js';
-import { kjvPureDb, kjvPureVerseCount, kjvPureWords } from '../data/kjvPureDb.js';
+import { kjvPureDb, kjvPureVerseCount, kjvPureWords }
+  from '../data/kjvPureDb.js';
 
 export let tomeDb = null;
 export let tomeVerseCount = null;

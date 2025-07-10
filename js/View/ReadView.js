@@ -1,4 +1,3 @@
-'use strict';
 
 import { queue } from '../CommandQueue.js';
 import { template } from '../template.js';
@@ -79,17 +78,15 @@ class ReadView {
     verse.dataset.verseIdx = verseObj.k;
     const verseNum = this.buildVerseNum(verseObj);
     verse.appendChild(verseNum);
-    const acrostic = template.acrostic(verseObj);
-    if (acrostic) {
-      verse.appendChild(acrostic);
-    }
-    const text = template.element('span', 'verse-text', null, null, verseObj.v[tomeIdx.verse.text]);
+    const text = template.element('span', 'verse-text', null, null,
+      verseObj.v[tomeIdx.verse.text]);
     verse.appendChild(text);
     return verse;
   }
 
   buildVerseNum(verseObj) {
-    const num = template.element('span', 'verse-num', null, null, verseObj.v[tomeIdx.verse.num] + ' ');
+    const num = template.element('span', 'verse-num', null, null,
+      verseObj.v[tomeIdx.verse.num] + ' ');
     return num;
   }
 
@@ -161,7 +158,8 @@ class ReadView {
     this.btnSearch = this.toolbarLower.querySelector('.btn-icon--search');
     this.btnSetting = this.toolbarLower.querySelector('.btn-icon--setting');
     this.btnHelp = this.toolbarLower.querySelector('.btn-icon--help');
-    this.btnColumnMode = this.toolbarLower.querySelector('.btn-icon--column-mode');
+    this.btnColumnMode = this.toolbarLower
+      .querySelector('.btn-icon--column-mode');
   }
 
   helpHide() {
@@ -230,7 +228,8 @@ class ReadView {
   }
 
   scrollToVerse() {
-    const element = this.list.querySelector(`[data-verse-idx="${this.scrollVerseIdx}"]`);
+    const element = this.list
+      .querySelector(`[data-verse-idx="${this.scrollVerseIdx}"]`);
     if (element) {
       if (this.columnMode) {
         util.sideScrollElement(this.scroll, element);
@@ -271,6 +270,11 @@ class ReadView {
   }
 
   subscribe() {
+    queue.subscribe('acrostics.update', (acrostics) => {
+      this.acrostics = acrostics;
+      this.verseObjsUpdate(this.verseObjs);
+    });
+
     queue.subscribe('bookmark.active-folder.update', (activeFolder) => {
       this.activeFolderUpdate(activeFolder);
     });
@@ -283,6 +287,11 @@ class ReadView {
 
     queue.subscribe('chapterIdx.update', (chapterIdx) => {
       this.chapterIdxUpdate(chapterIdx);
+    });
+
+    queue.subscribe('colophons.update', (colophons) => {
+      this.colophons = colophons;
+      this.verseObjsUpdate(this.verseObjs);
     });
 
     queue.subscribe('font.update', (font) => {
@@ -309,6 +318,11 @@ class ReadView {
     });
     queue.subscribe('navigator.show', () => {
       this.navigatorShow();
+    });
+
+    queue.subscribe('paragraphs.update', (paragraphs) => {
+      this.paragraphs = paragraphs;
+      this.verseObjsUpdate(this.verseObjs);
     });
 
     queue.subscribe('read.column-mode.update', (columnMode) => {
@@ -343,6 +357,11 @@ class ReadView {
 
     queue.subscribe('sidebar.update', (sidebar) => {
       this.sidebarUpdate(sidebar);
+    });
+
+    queue.subscribe('superscriptions.update', (superscriptions) => {
+      this.superscriptions = superscriptions;
+      this.verseObjsUpdate(this.verseObjs);
     });
 
     queue.subscribe('theme.update', (theme) => {
@@ -404,7 +423,8 @@ class ReadView {
   }
 
   updateBanner() {
-    this.btnBanner.textContent = tomeLists.chapters[this.chapterIdx][tomeIdx.chapter.name];
+    this.btnBanner.textContent =
+      tomeLists.chapters[this.chapterIdx][tomeIdx.chapter.name];
   }
 
   updateColumnMode() {
@@ -424,13 +444,45 @@ class ReadView {
   }
 
   updateVerses() {
+    if (typeof this.verseObjs == 'undefined') {
+      return;
+    }
     this.scroll.scrollTop = 0;
     util.removeAllChildren(this.list);
     const fragment = document.createDocumentFragment();
     for (const verseObj of this.verseObjs) {
+      if (this.acrostics) {
+        const acrostic = template.acrostic(verseObj);
+        if (acrostic) {
+          fragment.appendChild(acrostic);
+        }
+      }
+
+      if (this.paragraphs) {
+        const paragraph = template.paragraph(verseObj);
+        if (paragraph) {
+          fragment.appendChild(paragraph);
+        }
+      }
+
+      if (this.superscriptions) {
+        const superscription = template.superscription(verseObj);
+        if (superscription) {
+          fragment.appendChild(superscription);
+        }
+      }
+
       const verse = this.buildVerse(verseObj);
       fragment.appendChild(verse);
+
+      if (this.colophons) {
+        const colophon = template.colophon(verseObj);
+        if (colophon) {
+          fragment.appendChild(colophon);
+        }
+      }
     }
+
     this.list.appendChild(fragment);
   }
 

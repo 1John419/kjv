@@ -22,9 +22,8 @@ const lowerToolSet = [
   { type: 'btn', icon: 'expand-mode', ariaLabel: null },
 ];
 
-const upperToolSet = [
-  { type: 'btn-banner', cssModifier: 'bookmark-list', ariaLbael: 'Toogle Clipboard' },
-];
+const upperToolSet = [{type: 'btn-banner', cssModifier: 'bookmark-list',
+  ariaLbael: 'Toogle Clipboard' },];
 
 class BookmarkListView {
 
@@ -94,13 +93,16 @@ class BookmarkListView {
 
     this.scroll = template.scroll('bookmark-list');
 
-    this.empty = template.element('div', 'empty', 'bookmark-list', null, 'No bookmarks saved.');
+    this.empty = template.element('div', 'empty', 'bookmark-list', null,
+      'No bookmarks saved.');
     this.scroll.appendChild(this.empty);
 
-    this.entryList = template.element('div', 'list', 'bookmark-entry-list', null, null);
+    this.entryList = template.element('div', 'list', 'bookmark-entry-list',
+      null, null);
     this.scroll.appendChild(this.entryList);
 
-    this.verseList = template.element('div', 'list', 'bookmark-verse-list', null, null);
+    this.verseList = template.element('div', 'list', 'bookmark-verse-list',
+      null, null);
     this.scroll.appendChild(this.verseList);
 
     this.actionMenu = template.actionMenu('bookmark-list', actionSet);
@@ -128,13 +130,9 @@ class BookmarkListView {
     btn.dataset.verseIdx = verseObj.k;
     const searchText = document.createElement('span');
     searchText.classList.add('span-result-text');
-    const acrostic = template.acrostic(verseObj);
     const ref = this.buildRefSpan(verseObj);
     const text = document.createTextNode(verseObj.v[tomeIdx.verse.text]);
     searchText.appendChild(ref);
-    if (acrostic) {
-      searchText.appendChild(acrostic);
-    }
     searchText.appendChild(text);
     btn.appendChild(searchText);
     return btn;
@@ -197,8 +195,10 @@ class BookmarkListView {
   }
 
   getElements() {
-    this.btnFolderAdd = this.toolbarUpper.querySelector('.btn-icon--folder-add');
-    this.btnBanner = this.toolbarUpper.querySelector('.btn-banner--bookmark-list');
+    this.btnFolderAdd = this.toolbarUpper
+      .querySelector('.btn-icon--folder-add');
+    this.btnBanner = this.toolbarUpper
+      .querySelector('.btn-banner--bookmark-list');
 
     this.btnUp = this.actionMenu.querySelector('.btn-icon--up');
     this.btnDown = this.actionMenu.querySelector('.btn-icon--down');
@@ -207,10 +207,14 @@ class BookmarkListView {
     this.btnCancel = this.actionMenu.querySelector('.btn-icon--cancel');
 
     this.btnBack = this.toolbarLower.querySelector('.btn-icon--back');
-    this.btnSortAscend = this.toolbarLower.querySelector('.btn-icon--sort-ascend');
-    this.btnSortInvert = this.toolbarLower.querySelector('.btn-icon--sort-invert');
-    this.btnExpandMode = this.toolbarLower.querySelector('.btn-icon--expand-mode');
-    this.btnBookmarkFolder = this.toolbarLower.querySelector('.btn-icon--bookmark-folder');
+    this.btnSortAscend = this.toolbarLower
+      .querySelector('.btn-icon--sort-ascend');
+    this.btnSortInvert = this.toolbarLower
+      .querySelector('.btn-icon--sort-invert');
+    this.btnExpandMode = this.toolbarLower
+      .querySelector('.btn-icon--expand-mode');
+    this.btnBookmarkFolder = this.toolbarLower
+      .querySelector('.btn-icon--bookmark-folder');
   }
 
   hide() {
