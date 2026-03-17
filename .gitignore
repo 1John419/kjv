@@ -1,6 +1,7 @@
 /.gitignore
 /.nojekyll
 /.vscode
+/dbTest
 /ref
 /seTest
 /eslint.config.js
