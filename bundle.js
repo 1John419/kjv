@@ -110,7 +110,7 @@
       words: 'k',
     },
     url: '/json/kjv_pure.json',
-    version: '2024-05-09',
+    version: '2026-10-23',
   };
 
   let kjvPureDb = null;
@@ -604,6 +604,8 @@
     { type: 'btn', icon: 'next', ariaLabel: null },
   ];
 
+  const lastOtVerseIdx$2 = 23144;
+
   class ReadView {
 
     constructor() {
@@ -664,6 +666,18 @@
       verse.appendChild(verseNum);
       const text = template.element('span', 'verse-text', null, null,
         verseObj.v[tomeIdx.verse.text]);
+
+      if (verseObj.k > lastOtVerseIdx$2) {
+        if (this.redLetter) {
+          text.innerHTML = text.innerHTML.replaceAll('@', '<span class="quote">');
+          text.innerHTML = text.innerHTML.replaceAll('#', '</span>');
+        }
+        else {
+          text.innerHTML = text.innerHTML.replaceAll('@', '');
+          text.innerHTML = text.innerHTML.replaceAll('#', '');
+        }
+      }
+
       verse.appendChild(text);
       return verse;
     }
@@ -923,6 +937,11 @@
       });
       queue.subscribe('read.verse-objs.update', (verseObjs) => {
         this.verseObjsUpdate(verseObjs);
+      });
+
+      queue.subscribe('redLetter.update', (redLetter) => {
+        this.redLetter = redLetter;
+        this.verseObjsUpdate(this.verseObjs);
       });
 
       queue.subscribe('search.hide', () => {
@@ -2436,6 +2455,8 @@
   const upperToolSet$e = [{type: 'btn-banner', cssModifier: 'bookmark-list',
     ariaLbael: 'Toogle Clipboard' },];
 
+  const lastOtVerseIdx$1 = 23144;
+
   class BookmarkListView {
 
     constructor() {
@@ -2542,7 +2563,15 @@
       const searchText = document.createElement('span');
       searchText.classList.add('span-result-text');
       const ref = this.buildRefSpan(verseObj);
-      const text = document.createTextNode(verseObj.v[tomeIdx.verse.text]);
+      
+      var verseText = verseObj.v[tomeIdx.verse.text];
+      if (verseObj.k > lastOtVerseIdx$1) {
+        verseText = verseText.replaceAll('@', '');
+        verseText = verseText.replaceAll('#', '');
+      }
+
+      const text = document.createTextNode(verseText);
+
       searchText.appendChild(ref);
       searchText.appendChild(text);
       btn.appendChild(searchText);
@@ -4388,7 +4417,7 @@
       for (const verseObj of verseObjs) {
         this.verseIdx = verseObj.k;
         const re = this.buildRegExp(this.searchTerms, this.flags);
-        const text = verseObj.v[tomeIdx.verse.text].replace(/[!();:,.?-]/g, '');
+        const text = verseObj.v[tomeIdx.verse.text].replace(/[@#!();:,.?-]/g, '');
         this.verseCount = (text.match(re) || []).length;
         if (this.verseCount > 0) {
           this.rig.tomeBin[binIdx.tomeBinIdx.verses].push(this.verseIdx);
@@ -4817,6 +4846,8 @@
   const localBinIdx = 0;
   const loadIncrement = 50;
 
+  const lastOtVerseIdx = 23144;
+
   class SearchResultView {
 
     constructor() {
@@ -4913,7 +4944,15 @@
       const searchText = document.createElement('span');
       searchText.classList.add('span-result-text');
       const ref = this.buildRefSpan(verseObj);
-      const text = document.createTextNode(verseObj.v[tomeIdx.verse.text]);
+
+      var verseText = verseObj.v[tomeIdx.verse.text];
+      if (verseObj.k > lastOtVerseIdx) {
+        verseText = verseText.replaceAll('@', '');
+        verseText = verseText.replaceAll('#', '');
+      }
+
+      const text = document.createTextNode(verseText);
+
       searchText.appendChild(ref);
       searchText.appendChild(text);
       btn.appendChild(searchText);
@@ -6166,6 +6205,16 @@
       this.paragraphsChange(!this.paragraphs);
     }
 
+    redLetterChange(redLetter) {
+      this.redletter = redLetter;
+      this.saveRedLetter();
+      queue.publish('redLetter.update', this.redletter);
+    }
+
+    redLetterToogle() {
+      this.redLetterChange(!this.redletter);
+    }
+
     restore() {
       this.initializeFonts();
       this.restoreFont();
@@ -6176,11 +6225,12 @@
       this.restoreAcrostics();
       this.restoreColophons();
       this.restoreParagraphs();
+      this.restoreRedLetter();
       this.restoreSuperscriptions();
     }
 
     restoreAcrostics() {
-      const defaultAcrostics = false;
+      const defaultAcrostics = true;
       let acrostics = localStorage.getItem('acrostics');
       if (!acrostics) {
         acrostics = defaultAcrostics;
@@ -6198,7 +6248,7 @@
     }
 
     restoreColophons() {
-      const defaultColophons = false;
+      const defaultColophons = true;
       let colophons = localStorage.getItem('colophons');
       if (!colophons) {
         colophons = defaultColophons;
@@ -6270,7 +6320,7 @@
     }
 
     restoreParagraphs() {
-      const defaultParagraphs = false;
+      const defaultParagraphs = true;
       let paragraphs = localStorage.getItem('paragraphs');
       if (!paragraphs) {
         paragraphs = defaultParagraphs;
@@ -6287,8 +6337,26 @@
       this.paragraphsChange(paragraphs);
     }
 
+    restoreRedLetter() {
+      const defaultRedLetter = true;
+      let redLetter = localStorage.getItem('redLetter');
+      if (!redLetter) {
+        redLetter = defaultRedLetter;
+      } else {
+        try {
+          redLetter = JSON.parse(redLetter);
+        } catch (error) {
+          redLetter = defaultRedLetter;
+        }
+        if (typeof redLetter !== 'boolean') {
+          redLetter = defaultRedLetter;
+        }
+      }
+      this.redLetterChange(redLetter);
+    }
+
     restoreSuperscriptions() {
-      const defaultSuperscriptions = false;
+      const defaultSuperscriptions = true;
       let superscriptions = localStorage.getItem('superscriptions');
       if (!superscriptions) {
         superscriptions = defaultSuperscriptions;
@@ -6347,6 +6415,10 @@
       localStorage.setItem('paragraphs', JSON.stringify(this.paragraphs));
     }
 
+    saveRedLetter() {
+      localStorage.setItem('redLetter', JSON.stringify(this.redletter));
+    }
+
     saveSuperscriptions() {
       localStorage.setItem('superscriptions',
         JSON.stringify(this.superscriptions));
@@ -6379,6 +6451,10 @@
 
       queue.subscribe('paragraphs.toogle', () => {
         this.paragraphsToogle();
+      });
+
+      queue.subscribe('redLetter.toogle', () => {
+        this.redLetterToogle();
       });
 
       queue.subscribe('setting.restore', () => {
@@ -6523,11 +6599,13 @@
     const btnAcrostics = templateBtnReadOption('acrostics', 'Acrostics');
     const btnColophons = templateBtnReadOption('colophons', 'Colophons');
     const btnParagraphs = templateBtnReadOption('paragraphs', 'Paragraphs');
+    const btnRedLetter = templateBtnReadOption('redLetter', 'Red Letter');
     const btnSuperscriptions = templateBtnReadOption('superscriptions',
       'Superscriptions');
     container.appendChild(btnAcrostics);
     container.appendChild(btnColophons);
     container.appendChild(btnParagraphs);
+    container.appendChild(btnRedLetter);
     container.appendChild(btnSuperscriptions);
     divSetting.appendChild(heading);
     divSetting.appendChild(container);
@@ -6715,6 +6793,8 @@
         .querySelector('[data-type="colophons"]');
       this.btnParagraphs = this.divSettingReadOption
         .querySelector('[data-type="paragraphs"]');
+      this.btnRedLetter = this.divSettingReadOption
+        .querySelector('[data-type="redLetter"]');
       this.btnSuperscriptions = this.divSettingReadOption
         .querySelector('[data-type="superscriptions"]');
 
@@ -6753,11 +6833,21 @@
           queue.publish('colophons.toogle', null);
         } else if (type === 'paragraphs') {
           queue.publish('paragraphs.toogle', null);
+        } else if (type === 'redLetter') {
+          queue.publish('redLetter.toogle', null);
         } else if (type === 'superscriptions') {
           queue.publish('superscriptions.toogle', null);
         }
       }
 
+    }
+
+    redLetterUpdate(redLetter) {
+      if (redLetter) {
+        this.btnRedLetter.classList.add('btn-read-option--active');
+      } else {
+        this.btnRedLetter.classList.remove('btn-read-option--active');
+      }
     }
 
     scrollClick(event) {
@@ -6807,6 +6897,10 @@
 
       queue.subscribe('paragraphs.update', (paragraphs) => {
         this.paragraphsUpdate(paragraphs);
+      });
+
+      queue.subscribe('redLetter.update', (redLetter) => {
+        this.redLetterUpdate(redLetter);
       });
 
       queue.subscribe('setting.hide', () => {

@@ -20,6 +20,8 @@ const upperToolSet = [
   { type: 'btn', icon: 'next', ariaLabel: null },
 ];
 
+const lastOtVerseIdx = 23144;
+
 class ReadView {
 
   constructor() {
@@ -80,6 +82,18 @@ class ReadView {
     verse.appendChild(verseNum);
     const text = template.element('span', 'verse-text', null, null,
       verseObj.v[tomeIdx.verse.text]);
+
+    if (verseObj.k > lastOtVerseIdx) {
+      if (this.redLetter) {
+        text.innerHTML = text.innerHTML.replaceAll('@', '<span class="quote">');
+        text.innerHTML = text.innerHTML.replaceAll('#', '</span>');
+      }
+      else {
+        text.innerHTML = text.innerHTML.replaceAll('@', '');
+        text.innerHTML = text.innerHTML.replaceAll('#', '');
+      }
+    }
+
     verse.appendChild(text);
     return verse;
   }
@@ -339,6 +353,11 @@ class ReadView {
     });
     queue.subscribe('read.verse-objs.update', (verseObjs) => {
       this.verseObjsUpdate(verseObjs);
+    });
+
+    queue.subscribe('redLetter.update', (redLetter) => {
+      this.redLetter = redLetter;
+      this.verseObjsUpdate(this.verseObjs);
     });
 
     queue.subscribe('search.hide', () => {
