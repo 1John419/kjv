@@ -83,10 +83,23 @@ class ReadView {
     const text = template.element('span', 'verse-text', null, null,
       verseObj.v[tomeIdx.verse.text]);
 
+    if (this.italics) {
+      text.innerHTML = text.innerHTML.replaceAll(
+        '$', '<span class="italic">');
+      text.innerHTML = text.innerHTML.replaceAll(
+        '%', '</span>');
+    }
+    else {
+      text.innerHTML = text.innerHTML.replaceAll('$', '');
+      text.innerHTML = text.innerHTML.replaceAll('%', '');
+    }
+
     if (verseObj.k > lastOtVerseIdx) {
       if (this.redLetter) {
-        text.innerHTML = text.innerHTML.replaceAll('@', '<span class="quote">');
-        text.innerHTML = text.innerHTML.replaceAll('#', '</span>');
+        text.innerHTML = text.innerHTML.replaceAll(
+          '@', '<span class="quote">');
+        text.innerHTML = text.innerHTML.replaceAll(
+          '#', '</span>');
       }
       else {
         text.innerHTML = text.innerHTML.replaceAll('@', '');
@@ -242,6 +255,9 @@ class ReadView {
   }
 
   scrollToVerse() {
+    if (this.scrollVerseIdx === null) {
+      return;
+    }
     const element = this.list
       .querySelector(`[data-verse-idx="${this.scrollVerseIdx}"]`);
     if (element) {
@@ -250,6 +266,7 @@ class ReadView {
       } else {
         util.centerScrollElement(this.scroll, element);
       }
+      this.scrollVerseIdx = null;
     }
   }
 
@@ -325,6 +342,11 @@ class ReadView {
     });
     queue.subscribe('help.show', () => {
       this.helpShow();
+    });
+
+    queue.subscribe('italics.update', (italics) => {
+      this.italics = italics;
+      this.verseObjsUpdate(this.verseObjs);
     });
 
     queue.subscribe('navigator.hide', () => {
@@ -466,7 +488,6 @@ class ReadView {
     if (typeof this.verseObjs == 'undefined') {
       return;
     }
-    this.scroll.scrollTop = 0;
     util.removeAllChildren(this.list);
     const fragment = document.createDocumentFragment();
     for (const verseObj of this.verseObjs) {
@@ -487,6 +508,18 @@ class ReadView {
       if (this.superscriptions) {
         const superscription = template.superscription(verseObj);
         if (superscription) {
+          if (this.italics) {
+            superscription.innerHTML = superscription.innerHTML.replaceAll(
+              '$', '<span class="italic">');
+            superscription.innerHTML = superscription.innerHTML.replaceAll(
+              '%', '</span>');
+          }
+          else {
+            superscription.innerHTML = 
+              superscription.innerHTML.replaceAll('$', '');
+            superscription.innerHTML = 
+              superscription.innerHTML.replaceAll('%', '');
+          }
           fragment.appendChild(superscription);
         }
       }
@@ -497,6 +530,16 @@ class ReadView {
       if (this.colophons) {
         const colophon = template.colophon(verseObj);
         if (colophon) {
+          if (this.italics) {
+            colophon.innerHTML = colophon.innerHTML.replaceAll(
+              '$', '<span class="italic">');
+            colophon.innerHTML = colophon.innerHTML.replaceAll(
+              '%', '</span>');
+          }
+          else {
+            colophon.innerHTML = colophon.innerHTML.replaceAll('$', '');
+            colophon.innerHTML = colophon.innerHTML.replaceAll('%', '');
+          }
           fragment.appendChild(colophon);
         }
       }
